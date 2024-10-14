@@ -15,7 +15,7 @@ use yii\web\Response;
  *     ),
  *     @OA\Info(
  *         version="1.0.0",
- *         title="APIv1",
+ *         title="Datafeed API v1",
  *         description="APIs document of v1 that based on Swagger OpenAPI",
  *         termsOfService="http://swagger.io/terms/",
  *         @OA\Contact(name="xxxx"),
