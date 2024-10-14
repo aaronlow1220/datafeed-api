@@ -1,0 +1,14 @@
+namespace: Tester
+bootstrap: _bootstrap.php
+paths:
+  tests: tests
+  output: tests/_output
+  data: tests/Support/Data
+  support: tests/Support
+settings:
+  memory_limit: 1024M
+  colors: true
+modules:
+  config:
+    Yii2:
+      configFile: "config/test.php"

@@ -1,0 +1,13 @@
+includes:
+parameters:
+    level: 6
+    paths:
+        - commands
+        - components
+        - controllers
+        - models
+        - modules
+    bootstrapFiles:
+        - vendor/yiisoft/yii2/Yii.php
+    tmpDir: runtime/phpstan
+    treatPhpDocTypesAsCertain: false
