@@ -19,6 +19,7 @@ class m241014_084223_create_client_table extends Migration
     {
         $this->createTable($this->table, [
             'id' => $this->bigPrimaryKey()->unsigned()->notNull()->comment('Auto increment id'),
+            'label' => $this->string(255)->notNull()->comment('Client label'),
             'name' => $this->string(255)->notNull()->comment('Client name'),
             'data' => $this->text()->notNull()->comment('Data mapping rule, JSON format'),
             'created_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),

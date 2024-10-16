@@ -35,4 +35,15 @@ return [
             'POST <a:(search)>' => '<a>',
         ],
     ],
+    [ // Transformer
+        'class' => 'yii\rest\UrlRule',
+        'controller' => [
+            'transformer' => 'v1/transformer',
+        ],
+        'except' => ['index', 'delete'],
+        'extraPatterns' => [
+            'OPTIONS <a:(search)>' => 'options',
+            'POST <a:(search)>' => '<a>',
+        ],
+    ],
 ];
