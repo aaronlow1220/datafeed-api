@@ -24,4 +24,15 @@ return [
             'POST <a:(search)>' => '<a>',
         ],
     ],
+    [ // Data Version
+        'class' => 'yii\rest\UrlRule',
+        'controller' => [
+            'data-version' => 'v1/data-version',
+        ],
+        'except' => ['index', 'delete'],
+        'extraPatterns' => [
+            'OPTIONS <a:(search)>' => 'options',
+            'POST <a:(search)>' => '<a>',
+        ],
+    ],
 ];
