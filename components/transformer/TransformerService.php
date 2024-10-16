@@ -14,10 +14,10 @@ use function Flow\ETL\Adapter\CSV\{to_csv};
  */
 class TransformerService
 {
-    public function transform(array $data, ActiveRecord $client, ActiveRecord $platform): void
+    public function transform(string $resultPath, array $data, ActiveRecord $client, ActiveRecord $platform): void
     {
         try {
-            $destinationPath = __DIR__ . '/../../modules/v1/files/result/ ' . $client['name'] . '_adgeek_feed.csv';
+            // $destinationPath = __DIR__ . '/../../modules/v1/files/result/ ' . $client['name'] . '_adgeek_feed.csv';
             $client = json_decode($client["data"], true);
             $platform = json_decode($platform["data"], true);
 
@@ -39,7 +39,7 @@ class TransformerService
             $etl->select(...array_keys($platform));
 
             // Load to CSV
-            $etl->load(to_csv($destinationPath))->run();
+            $etl->load(to_csv($resultPath))->run();
 
         } catch (Throwable $e) {
             throw $e;

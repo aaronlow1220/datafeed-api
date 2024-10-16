@@ -39,6 +39,7 @@ class TransformerController extends ActiveApiController
     {
         try {
             $filePath = __DIR__ . '/../files/original/airspace_feed.csv';
+            $resultPath = __DIR__ . '/../files/result/' . $client . '_' . $platform . '_feed.csv';
             $clientInfo = $this->clientRepo->findOne(['name' => $client]);
             $platformInfo = $this->platformRepo->findOne(['name' => $platform]);
 
@@ -67,7 +68,7 @@ class TransformerController extends ActiveApiController
                         }
                         $data[] = $itemData;
                     }
-                    $this->transformerService->transform($data, $clientInfo, $platformInfo);
+                    $this->transformerService->transform($resultPath, $data, $clientInfo, $platformInfo);
                     break;
                 case 'txt':
                 case 'csv':
@@ -88,7 +89,7 @@ class TransformerController extends ActiveApiController
                     // Close the file
                     fclose($file);
 
-                    $this->transformerService->transform($data, $clientInfo, $platformInfo);
+                    $this->transformerService->transform($resultPath, $data, $clientInfo, $platformInfo);
                     break;
                 default:
                     throw new HttpException(400, 'File type not supported.');
