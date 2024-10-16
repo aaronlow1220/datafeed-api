@@ -14,6 +14,7 @@ use yii\db\ActiveRecord;
  *   description="This model is used to access client data",
  *   required={"id", "name", "data", "created_by", "created_at", "updated_by", "updated_at"},
  *   @OA\Property(property="id", type="integer", description="Auto increment id #autoIncrement #pk"),
+ *   @OA\Property(property="label", type="string", description="Client label", maxLength=255),
  *   @OA\Property(property="name", type="string", description="Client name", maxLength=255),
  *   @OA\Property(property="data", type="string", description="Data mapping rule, JSON format"),
  *   @OA\Property(property="created_by", type="integer", description="ref: > user.id"),

@@ -15,6 +15,7 @@
         const div = document.getElementById(divId);
         const inputs = div.querySelectorAll('input');
         const name = document.querySelector("#name");
+        const label = document.querySelector("#label");
         let data = {};
 
         inputs.forEach(input => {
@@ -23,6 +24,7 @@
 
         let jsonStructure = {
             name: name.value,
+            label: label.value,
             data: JSON.stringify(data)
         };
 
@@ -63,6 +65,7 @@
 <body>
     <h1>Client Data</h1>
     <input id="name" placeholder="name" type="text">
+    <input id="label" placeholder="label" type="text">
     <br>
     <br>
     <div id="client-data">

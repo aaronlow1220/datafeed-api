@@ -59,6 +59,7 @@ use yii\web\HttpException;
  *             mediaType="application/json",
  *             @OA\Schema(
  *                  @OA\Property(property="name", ref="#/components/schemas/Client/properties/name"),
+ *                  @OA\Property(property="label", ref="#/components/schemas/Client/properties/label"),
  *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data")
  *             )
  *         ),
@@ -90,6 +91,7 @@ use yii\web\HttpException;
  *             mediaType="application/json",
  *             @OA\Schema(
  *                  @OA\Property(property="name", ref="#/components/schemas/Client/properties/name"),
+ *                  @OA\Property(property="label", ref="#/components/schemas/Client/properties/label"),
  *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data")
  *             )
  *         ),
