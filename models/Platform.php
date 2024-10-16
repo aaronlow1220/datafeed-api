@@ -67,9 +67,9 @@ class Platform extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'data'], 'trim'],
+            [['name', 'label', 'data'], 'trim'],
             [['id', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['name', 'data'], 'string'],
+            [['name', 'label', 'data'], 'string'],
         ];
     }
 

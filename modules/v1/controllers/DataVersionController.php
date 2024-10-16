@@ -58,13 +58,8 @@ use yii\web\HttpException;
  *         @OA\MediaType(
  *             mediaType="application/json",
  *             @OA\Schema(
- *                  @OA\Property(property="id", ref="#/components/schemas/DataVersion/properties/id"),
  *                  @OA\Property(property="client_id", ref="#/components/schemas/DataVersion/properties/client_id"),
- *                  @OA\Property(property="hash", ref="#/components/schemas/DataVersion/properties/hash"),
- *                  @OA\Property(property="created_by", ref="#/components/schemas/DataVersion/properties/created_by"),
- *                  @OA\Property(property="created_at", ref="#/components/schemas/DataVersion/properties/created_at"),
- *                  @OA\Property(property="updated_by", ref="#/components/schemas/DataVersion/properties/updated_by"),
- *                  @OA\Property(property="updated_at", ref="#/components/schemas/DataVersion/properties/updated_at")
+ *                  @OA\Property(property="hash", ref="#/components/schemas/DataVersion/properties/hash")
  *             )
  *         ),
  *     ),
@@ -94,13 +89,8 @@ use yii\web\HttpException;
  *         @OA\MediaType(
  *             mediaType="application/json",
  *             @OA\Schema(
- *                  @OA\Property(property="id", ref="#/components/schemas/DataVersion/properties/id"),
  *                  @OA\Property(property="client_id", ref="#/components/schemas/DataVersion/properties/client_id"),
- *                  @OA\Property(property="hash", ref="#/components/schemas/DataVersion/properties/hash"),
- *                  @OA\Property(property="created_by", ref="#/components/schemas/DataVersion/properties/created_by"),
- *                  @OA\Property(property="created_at", ref="#/components/schemas/DataVersion/properties/created_at"),
- *                  @OA\Property(property="updated_by", ref="#/components/schemas/DataVersion/properties/updated_by"),
- *                  @OA\Property(property="updated_at", ref="#/components/schemas/DataVersion/properties/updated_at")
+ *                  @OA\Property(property="hash", ref="#/components/schemas/DataVersion/properties/hash")
  *             )
  *         ),
  *     ),
