@@ -40,10 +40,10 @@ return [
         'controller' => [
             'transformer' => 'v1/transformer',
         ],
-        'except' => ['index', 'delete'],
         'extraPatterns' => [
             'OPTIONS <a:(search)>' => 'options',
             'POST <a:(search)>' => '<a>',
+            'GET <a:(transform)>/<client>/<platform>' => '<a>',
         ],
     ],
 ];

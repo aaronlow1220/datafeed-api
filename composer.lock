@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ccfc5cd188a05ecc1c748c8468e8536f",
+    "content-hash": "42042b4b148d5c0ed42065439e7bfb5c",
     "packages": [
         {
             "name": "atellitech/utils-yii2",
@@ -496,6 +496,260 @@
             "time": "2023-11-17T15:01:25+00:00"
         },
         {
+            "name": "flow-php/array-dot",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/array-dot.git",
+                "reference": "70ca846b8f1c472fa9388cafc4e3a52b35576629"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/array-dot/zipball/70ca846b8f1c472fa9388cafc4e3a52b35576629",
+                "reference": "70ca846b8f1c472fa9388cafc4e3a52b35576629",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/ArrayDot/array_dot.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Array Dot functions",
+            "keywords": [
+                "array",
+                "dot",
+                "etl",
+                "extract",
+                "filter",
+                "load",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/array-dot/issues",
+                "source": "https://github.com/flow-php/array-dot/tree/0.10.0"
+            },
+            "time": "2024-09-05T19:07:26+00:00"
+        },
+        {
+            "name": "flow-php/etl",
+            "version": "0.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/etl.git",
+                "reference": "11218529865b182e0617db4331c4ea028a175f6f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/etl/zipball/11218529865b182e0617db4331c4ea028a175f6f",
+                "reference": "11218529865b182e0617db4331c4ea028a175f6f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "flow-php/array-dot": "^0.10.0 || 1.x-dev",
+                "flow-php/filesystem": "^0.10.0 || 1.x-dev",
+                "flow-php/rdsl": "^0.10.0 || 1.x-dev",
+                "jawira/case-converter": "^3.4",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0",
+                "webmozart/glob": "^3.0 || ^4.0"
+            },
+            "require-dev": {
+                "ramsey/uuid": "^4.5",
+                "symfony/uid": "^6.3 || ^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/ETL/DSL/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Extract Transform Load - Abstraction",
+            "keywords": [
+                "etl",
+                "extract",
+                "load",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/etl/issues",
+                "source": "https://github.com/flow-php/etl/tree/0.10.0"
+            },
+            "time": "2024-10-03T17:12:26+00:00"
+        },
+        {
+            "name": "flow-php/etl-adapter-csv",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/etl-adapter-csv.git",
+                "reference": "59d242b74ee3817bc1fece96ae72ec0a6ad40fe4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/etl-adapter-csv/zipball/59d242b74ee3817bc1fece96ae72ec0a6ad40fe4",
+                "reference": "59d242b74ee3817bc1fece96ae72ec0a6ad40fe4",
+                "shasum": ""
+            },
+            "require": {
+                "flow-php/etl": "^0.10.0 || 1.x-dev",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/ETL/Adapter/CSV/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Adapter - CSV",
+            "keywords": [
+                "adapter",
+                "csv",
+                "etl",
+                "extract",
+                "load",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/etl-adapter-csv/issues",
+                "source": "https://github.com/flow-php/etl-adapter-csv/tree/0.10.0"
+            },
+            "time": "2024-10-03T17:12:22+00:00"
+        },
+        {
+            "name": "flow-php/filesystem",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/filesystem.git",
+                "reference": "eef1a096697fc2dc013b9c066d1e2c42f59e95bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/filesystem/zipball/eef1a096697fc2dc013b9c066d1e2c42f59e95bd",
+                "reference": "eef1a096697fc2dc013b9c066d1e2c42f59e95bd",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "webmozart/glob": "^3.0 || ^4.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/Filesystem/DSL/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Filesystem abstraction",
+            "keywords": [
+                "aws",
+                "azure",
+                "etl",
+                "extract",
+                "filesystem",
+                "gcp",
+                "load",
+                "remote",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/filesystem/issues",
+                "source": "https://github.com/flow-php/filesystem/tree/1.x"
+            },
+            "time": "2024-10-14T10:18:04+00:00"
+        },
+        {
+            "name": "flow-php/rdsl",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/rdsl.git",
+                "reference": "6fa54d160ee1c16a3c4fbe0fc4e108758a157ec6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/rdsl/zipball/6fa54d160ee1c16a3c4fbe0fc4e108758a157ec6",
+                "reference": "6fa54d160ee1c16a3c4fbe0fc4e108758a157ec6",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Remote DSL",
+            "keywords": [
+                "Algorithm",
+                "compression",
+                "etl",
+                "extract",
+                "filter",
+                "load",
+                "snappy",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/rdsl/issues",
+                "source": "https://github.com/flow-php/rdsl/tree/0.10.0"
+            },
+            "time": "2024-09-05T19:07:29+00:00"
+        },
+        {
             "name": "graham-campbell/result-type",
             "version": "1.1.x-dev",
             "source": {
@@ -557,6 +811,73 @@
                 }
             ],
             "time": "2024-07-20T21:45:45+00:00"
+        },
+        {
+            "name": "jawira/case-converter",
+            "version": "v3.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jawira/case-converter.git",
+                "reference": "2be05b98dcb743bef60ab6f849145bd3434ed003"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jawira/case-converter/zipball/2be05b98dcb743bef60ab6f849145bd3434ed003",
+                "reference": "2be05b98dcb743bef60ab6f849145bd3434ed003",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "behat/behat": "^3.0",
+                "phpstan/phpstan": "^1.0",
+                "phpunit/phpunit": "^9.0",
+                "vimeo/psalm": "^4.0"
+            },
+            "suggest": {
+                "pds/skeleton": "PHP Package Development Standards",
+                "phing/phing": "PHP Build Tool"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jawira\\CaseConverter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jawira Portugal",
+                    "email": "dev@tugal.be"
+                }
+            ],
+            "description": "Convert strings between 13 naming conventions: Snake case, Camel case, Pascal case, Kebab case, Ada case, Train case, Cobol case, Macro case, Upper case, Lower case, Sentence case, Title case and Dot notation.",
+            "homepage": "https://jawira.github.io/case-converter/",
+            "keywords": [
+                "Ada case",
+                "Cobol case",
+                "Macro case",
+                "Train case",
+                "camel case",
+                "dot notation",
+                "kebab case",
+                "lower case",
+                "pascal case",
+                "sentence case",
+                "snake case",
+                "title case",
+                "upper case"
+            ],
+            "support": {
+                "issues": "https://github.com/jawira/case-converter/issues",
+                "source": "https://github.com/jawira/case-converter/tree/v3.5.1"
+            },
+            "time": "2022-08-14T11:40:18+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -899,6 +1220,58 @@
                 "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
             "time": "2024-09-11T13:17:53+00:00"
+        },
+        {
+            "name": "psr/simple-cache",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/simple-cache.git",
+                "reference": "2d280c2aaa23a120f35d55cfde8581954a8e77fa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/2d280c2aaa23a120f35d55cfde8581954a8e77fa",
+                "reference": "2d280c2aaa23a120f35d55cfde8581954a8e77fa",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\SimpleCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for simple caching",
+            "keywords": [
+                "cache",
+                "caching",
+                "psr",
+                "psr-16",
+                "simple-cache"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/master"
+            },
+            "time": "2022-04-08T16:41:45+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -2001,6 +2374,56 @@
                 }
             ],
             "time": "2024-07-20T21:52:34+00:00"
+        },
+        {
+            "name": "webmozart/glob",
+            "version": "4.8.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmozarts/glob.git",
+                "reference": "6712c9c4a8b0f6f629303bd1b26b9f88339d901e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmozarts/glob/zipball/6712c9c4a8b0f6f629303bd1b26b9f88339d901e",
+                "reference": "6712c9c4a8b0f6f629303bd1b26b9f88339d901e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3 || ^8.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "symfony/filesystem": "^5.3"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webmozart\\Glob\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                }
+            ],
+            "description": "A PHP implementation of Ant's glob.",
+            "support": {
+                "issues": "https://github.com/webmozarts/glob/issues",
+                "source": "https://github.com/webmozarts/glob/tree/4.8.x"
+            },
+            "time": "2024-08-06T15:56:59+00:00"
         },
         {
             "name": "yiisoft/yii2",
@@ -7468,6 +7891,7 @@
     "stability-flags": {
         "vlucas/phpdotenv": 20,
         "atellitech/utils-yii2": 20,
+        "doctrine/annotations": 20,
         "friendsofphp/php-cs-fixer": 20,
         "phpstan/phpstan": 20
     },
