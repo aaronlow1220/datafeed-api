@@ -14,6 +14,7 @@ class m241016_075808_create_datafeed_table extends Migration
     {
         $this->createTable('{{%datafeed}}', [
             'id' => $this->bigPrimaryKey()->unsigned()->notNull()->comment('Auto increment id'),
+            'client_id' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: client.id'),
             'datafeedid' => $this->string(255)->notNull()->comment('Datafeed id'),
             'condition' => $this->string(255)->comment('Condition'),
             'availability' => $this->string(255)->comment('Availability'),

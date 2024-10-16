@@ -35,6 +35,17 @@ return [
             'POST <a:(search)>' => '<a>',
         ],
     ],
+    [ // Datafeed
+        'class' => 'yii\rest\UrlRule',
+        'controller' => [
+            'datafeed' => 'v1/datafeed',
+        ],
+        'extraPatterns' => [
+            'OPTIONS <a:(search|create)>' => 'options',
+            'POST <a:(search)>' => '<a>',
+            'POST <id:\d+>/<a:(create)>' => '<a>',
+        ],
+    ],
     [ // Transformer
         'class' => 'yii\rest\UrlRule',
         'controller' => [
