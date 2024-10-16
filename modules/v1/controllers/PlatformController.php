@@ -6,28 +6,28 @@ use InvalidArgumentException;
 use Throwable;
 use app\modules\v1\Module;
 use v1\components\ActiveApiController;
-use v1\components\client\ClientSearchService;
+use v1\components\platform\PlatformSearchService;
 use yii\data\ActiveDataProvider;
 use yii\web\HttpException;
 
 /**
  * @OA\Tag(
- *     name="Client",
- *     description="Everything about your Client",
+ *     name="Platform",
+ *     description="Everything about your Platform",
  * )
  *
  * @OA\Get(
- *     path="/client/{id}",
+ *     path="/platform/{id}",
  *     summary="Get",
- *     description="Get Client by particular id",
- *     operationId="getClient",
- *     tags={"Client"},
+ *     description="Get Platform by particular id",
+ *     operationId="getPlatform",
+ *     tags={"Platform"},
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
- *         description="Client id",
+ *         description="Platform id",
  *         required=true,
- *         @OA\Schema(ref="#/components/schemas/Client/properties/id")
+ *         @OA\Schema(ref="#/components/schemas/Platform/properties/id")
  *     ),
  *     @OA\Parameter(
  *         name="fields",
@@ -37,90 +37,90 @@ use yii\web\HttpException;
  *     @OA\Parameter(
  *         name="expand",
  *         in="query",
- *         @OA\Schema(ref="#/components/schemas/ClientSearch/properties/expand")
+ *         @OA\Schema(type="string", enum={"xxxx"}, description="Query related models, using comma(,) be seperator")
  *     ),
  *     @OA\Response(
  *         response=200,
  *         description="Successful operation",
- *         @OA\JsonContent(type="object", ref="#/components/schemas/Client")
+ *         @OA\JsonContent(type="object", ref="#/components/schemas/Platform")
  *     )
  * )
  *
  * @OA\Post(
- *     path="/client",
+ *     path="/platform",
  *     summary="Create",
- *     description="Create a record of Client",
- *     operationId="createClient",
- *     tags={"Client"},
+ *     description="Create a record of Platform",
+ *     operationId="createPlatform",
+ *     tags={"Platform"},
  *     @OA\RequestBody(
- *         description="Client object that needs to be added",
+ *         description="Platform object that needs to be added",
  *         required=true,
  *         @OA\MediaType(
  *             mediaType="application/json",
  *             @OA\Schema(
- *                  @OA\Property(property="name", ref="#/components/schemas/Client/properties/name"),
- *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data")
+ *                  @OA\Property(property="name", ref="#/components/schemas/Platform/properties/name"),
+ *                  @OA\Property(property="data", ref="#/components/schemas/Platform/properties/data")
  *             )
  *         ),
  *     ),
  *     @OA\Response(
  *         response=200,
  *         description="Successful operation",
- *         @OA\JsonContent(type="object", ref="#/components/schemas/Client")
+ *         @OA\JsonContent(type="object", ref="#/components/schemas/Platform")
  *     )
  * )
  *
  * @OA\Patch(
- *     path="/client/{id}",
+ *     path="/platform/{id}",
  *     summary="Update",
- *     description="Update a record of Client",
- *     operationId="updateClient",
- *     tags={"Client"},
+ *     description="Update a record of Platform",
+ *     operationId="updatePlatform",
+ *     tags={"Platform"},
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
- *         description="Client id",
+ *         description="Platform id",
  *         required=true,
- *         @OA\Schema(ref="#/components/schemas/Client/properties/id")
+ *         @OA\Schema(ref="#/components/schemas/Platform/properties/id")
  *     ),
  *     @OA\RequestBody(
- *         description="Client object that needs to be updated",
+ *         description="Platform object that needs to be updated",
  *         required=true,
  *         @OA\MediaType(
  *             mediaType="application/json",
  *             @OA\Schema(
- *                  @OA\Property(property="name", ref="#/components/schemas/Client/properties/name"),
- *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data")
+ *                  @OA\Property(property="name", ref="#/components/schemas/Platform/properties/name"),
+ *                  @OA\Property(property="data", ref="#/components/schemas/Platform/properties/data")
  *             )
  *         ),
  *     ),
  *     @OA\Response(
  *         response=200,
  *         description="Successful operation",
- *         @OA\JsonContent(type="object", ref="#/components/schemas/Client")
+ *         @OA\JsonContent(type="object", ref="#/components/schemas/Platform")
  *     )
  * )
  *
  * @version 1.0.0
  */
-class ClientController extends ActiveApiController
+class PlatformController extends ActiveApiController
 {
     /**
      * @var string
      */
-    public $modelClass = 'app\models\Client';
+    public $modelClass = 'app\models\Platform';
 
     /**
      * constructor.
      *
      * @param string $id
      * @param Module $module
-     * @param ClientSearchService $clientSearchService
+     * @param PlatformSearchService $platformSearchService
      * @param array<string, mixed> $config
      *
      * @return void
      */
-    public function __construct(string $id, Module $module, private ClientSearchService $clientSearchService, array $config = [])
+    public function __construct(string $id, Module $module, private PlatformSearchService $platformSearchService, array $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -141,17 +141,17 @@ class ClientController extends ActiveApiController
 
     /**
      * @OA\Post(
-     *     path="/client/search",
+     *     path="/platform/search",
      *     summary="Search",
-     *     description="Search Client by particular params",
-     *     operationId="searchClient",
-     *     tags={"Client"},
+     *     description="Search Platform by particular params",
+     *     operationId="searchPlatform",
+     *     tags={"Platform"},
      *     @OA\RequestBody(
-     *         description="search Client",
+     *         description="search Platform",
      *         required=false,
      *         @OA\MediaType(
      *             mediaType="application/json",
-     *             @OA\Schema(ref="#/components/schemas/ClientSearch")
+     *             @OA\Schema(ref="#/components/schemas/PlatformSearch")
      *         ),
      *     ),
      *     @OA\Response(
@@ -160,14 +160,14 @@ class ClientController extends ActiveApiController
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *              @OA\Property(property="_data", type="array", @OA\Items(ref="#/components/schemas/Client")),
+     *              @OA\Property(property="_data", type="array", @OA\Items(ref="#/components/schemas/Platform")),
      *              @OA\Property(property="_meta", type="object", ref="#/components/schemas/Pagination")
      *             )
      *         )
      *     )
      * )
      *
-     * Search Client
+     * Search Platform
      *
      * @return ActiveDataProvider
      */
@@ -176,7 +176,7 @@ class ClientController extends ActiveApiController
         try {
             $params = $this->getRequestParams();
 
-            return $this->clientSearchService->createDataProvider($params);
+            return $this->platformSearchService->createDataProvider($params);
         } catch (InvalidArgumentException $e) {
             throw new HttpException(400, $e->getMessage());
         } catch (Throwable $e) {

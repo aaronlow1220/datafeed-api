@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client</title>
+    <link rel="shortcut icon" href="https://symbols.getvecta.com/stencil_28/26_data-catalog.96ec6138ec.svg"
+        type="image/x-icon">
+</head>
+<script>
+    let url = "http://localhost:8080/client";
+
+    function collectAndSendData(divId) {
+        const div = document.getElementById(divId);
+        const inputs = div.querySelectorAll('input');
+        const name = document.querySelector("#name");
+        let data = {};
+
+        inputs.forEach(input => {
+            data[input.id] = input.value;
+        });
+
+        let jsonStructure = {
+            name: name.value,
+            data: JSON.stringify(data)
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonStructure)
+        })
+            .then(response => response.json())
+            .then(result => alert('Success'))
+            .catch(error => alert('Error'));
+    }
+</script>
+<style>
+    * {
+        font-family: sans-serif;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #client-data {
+        display: flex;
+        flex-direction: column;
+        width: 12rem;
+    }
+
+    input {
+        margin: 5px;
+    }
+</style>
+
+<body>
+    <h1>Client Data</h1>
+    <input id="name" placeholder="name" type="text">
+    <br>
+    <br>
+    <div id="client-data">
+        <input id="id" placeholder="id" type="text">
+        <input id="availability" placeholder="availability" type="text">
+        <input id="condition" placeholder="condition" type="text">
+        <input id="description" placeholder="description" type="text">
+        <input id="image_link" placeholder="image_link" type="text">
+        <input id="link" placeholder="link" type="text">
+        <input id="title" placeholder="title" type="text">
+        <input id="price" placeholder="price" type="text">
+        <input id="sale_price" placeholder="sale_price" type="text">
+        <input id="gtin" placeholder="gtin" type="text">
+        <input id="mpn" placeholder="mpn" type="text">
+        <input id="brand" placeholder="brand" type="text">
+        <input id="google_product_category" placeholder="google_product_category" type="text">
+        <input id="item_group_id" placeholder="item_group_id" type="text">
+        <input id="custom_label_0" placeholder="custom_label_0" type="text">
+        <input id="custom_label_1" placeholder="custom_label_1" type="text">
+        <input id="custom_label_2" placeholder="custom_label_2" type="text">
+        <input id="custom_label_3" placeholder="custom_label_3" type="text">
+        <input id="custom_label_4" placeholder="custom_label_4" type="text">
+    </div>
+
+    <input type="button" onclick="collectAndSendData('client-data')" value="submit">
+</body>
+
+</html>

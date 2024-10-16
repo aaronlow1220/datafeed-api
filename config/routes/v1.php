@@ -2,10 +2,21 @@
 
 return [
     'GET /apidoc' => 'v1/open-api-spec/index',
-    [ // taxonomy-type
+    [ // Client
         'class' => 'yii\rest\UrlRule',
         'controller' => [
-            'taxonomy-type' => 'v1/taxonomy-type',
+            'client' => 'v1/client',
+        ],
+        'except' => ['index', 'delete'],
+        'extraPatterns' => [
+            'OPTIONS <a:(search)>' => 'options',
+            'POST <a:(search)>' => '<a>',
+        ],
+    ],
+    [ // Platform
+        'class' => 'yii\rest\UrlRule',
+        'controller' => [
+            'platform' => 'v1/platform',
         ],
         'except' => ['index', 'delete'],
         'extraPatterns' => [
