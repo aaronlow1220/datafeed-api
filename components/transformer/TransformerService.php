@@ -2,10 +2,12 @@
 
 namespace app\components\transformer;
 
+use function Flow\ETL\Adapter\CSV\to_csv;
+use function Flow\ETL\DSL\data_frame;
+use function Flow\ETL\DSL\from_array;
+
 use Throwable;
 use yii\db\ActiveRecord;
-use function Flow\ETL\DSL\{data_frame, from_array};
-use function Flow\ETL\Adapter\CSV\{to_csv};
 
 /**
  * This is a service to handle business logic for transformer.
@@ -14,15 +16,25 @@ use function Flow\ETL\Adapter\CSV\{to_csv};
  */
 class TransformerService
 {
+    /**
+     * Transform the data from the file.
+     *
+     * @param string $resultPath
+     * @param array<int, mixed> $data
+     * @param ActiveRecord $client
+     * @param ActiveRecord $platform
+     *
+     * @return void
+     */
     public function transform(string $resultPath, array $data, ActiveRecord $client, ActiveRecord $platform): void
     {
         try {
             // $destinationPath = __DIR__ . '/../../modules/v1/files/result/ ' . $client['name'] . '_adgeek_feed.csv';
-            $client = json_decode($client["data"], true);
-            $platform = json_decode($platform["data"], true);
+            $client = json_decode($client['data'], true);
+            $platform = json_decode($platform['data'], true);
 
             foreach ($platform as $key => $value) {
-                if ($value === '' || $client[$key] === '') {
+                if ('' === $value || '' === $client[$key]) {
                     unset($client[$key]);
                 }
             }
@@ -40,7 +52,6 @@ class TransformerService
 
             // Load to CSV
             $etl->load(to_csv($resultPath))->run();
-
         } catch (Throwable $e) {
             throw $e;
         }

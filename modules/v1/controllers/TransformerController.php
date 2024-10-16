@@ -2,14 +2,14 @@
 
 namespace v1\controllers;
 
-use v1\components\ActiveApiController;
-use yii\web\HttpException;
-use Throwable;
 use SimpleXMLElement;
-use app\modules\v1\Module;
-use app\components\transformer\TransformerService;
+use Throwable;
 use app\components\client\ClientRepo;
 use app\components\platform\PlatformRepo;
+use app\components\transformer\TransformerService;
+use app\modules\v1\Module;
+use v1\components\ActiveApiController;
+use yii\web\HttpException;
 
 class TransformerController extends ActiveApiController
 {
@@ -33,13 +33,15 @@ class TransformerController extends ActiveApiController
     /**
      * Transform the data from the file.
      *
-     * @return string
+     * @param string $client
+     * @param string $platform
+     * @return array<int, mixed>
      */
     public function actionTransform(string $client, string $platform): array
     {
         try {
-            $filePath = __DIR__ . '/../files/original/airspace_feed.csv';
-            $resultPath = __DIR__ . '/../files/result/' . $client . '_' . $platform . '_feed.csv';
+            $filePath = __DIR__.'/../files/original/airspace_feed.csv';
+            $resultPath = __DIR__.'/../files/result/'.$client.'_'.$platform.'_feed.csv';
             $clientInfo = $this->clientRepo->findOne(['name' => $client]);
             $platformInfo = $this->platformRepo->findOne(['name' => $platform]);
 
@@ -69,10 +71,12 @@ class TransformerController extends ActiveApiController
                         $data[] = $itemData;
                     }
                     $this->transformerService->transform($resultPath, $data, $clientInfo, $platformInfo);
+
                     break;
+
                 case 'txt':
                 case 'csv':
-                    $file = fopen($filePath, "r");
+                    $file = fopen($filePath, 'r');
 
                     // Remove BOM
                     $bom = fread($file, 3);
@@ -90,14 +94,16 @@ class TransformerController extends ActiveApiController
                     fclose($file);
 
                     $this->transformerService->transform($resultPath, $data, $clientInfo, $platformInfo);
+
                     break;
+
                 default:
                     throw new HttpException(400, 'File type not supported.');
             }
         } catch (Throwable $e) {
             throw new HttpException(400, $e->getMessage());
         }
-        
+
         return $data;
     }
 }
