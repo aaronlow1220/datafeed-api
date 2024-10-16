@@ -3,16 +3,16 @@
 namespace v1\models\validator;
 
 /**
- * Client search model which supports the search with keyword.
+ * Data Version search model which supports the search with keyword.
  *
  *  @OA\Schema(
- *   schema="ClientSearch",
+ *   schema="DataVersionSearch",
  *   oneOf={
  *      @OA\Schema(ref="#/components/schemas/ApiSearchModel"),
  *   }
  * )
  */
-class ClientSearch extends ApiSearchModel
+class DataVersionSearch extends ApiSearchModel
 {
     /**
      * @var null|string Query related models, using comma(,) be seperator
