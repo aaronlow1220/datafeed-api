@@ -138,7 +138,27 @@ class DatafeedController extends ActiveApiController
     }
 
     /**
-     * Create datafeed.
+     * @OA\Post(
+     *     path="/datafeed/create/{id}",
+     *     summary="Create",
+     *     description="Create a record of Datafeed",
+     *     operationId="createDatafeed",
+     *     tags={"Datafeed"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Client id",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/Client/properties/id")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(type="object", ref="#/components/schemas/DataVersion")
+     *     )
+     * )
+     * 
+     * Create datafeed with a file.
      *
      * @param int $id
      * @return array<int, mixed>
@@ -162,7 +182,7 @@ class DatafeedController extends ActiveApiController
 
             $data = [];
 
-            $filePath = __DIR__.'/../files/original/';
+            $filePath = __DIR__ . '/../files/original/';
 
             $filePath = $this->datafeedService->readFeedFile($filePath);
 
@@ -183,11 +203,38 @@ class DatafeedController extends ActiveApiController
             $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
             return $processedData;
         } catch (Throwable $e) {
-            throw new HttpException(400, 'Create datafeed failed, '.$e->getMessage());
+            throw new HttpException(400, 'Create datafeed failed, ' . $e->getMessage());
         }
     }
 
     /**
+     * @OA\Post(
+     *     path="/datafeed/export/{id}/{platformid}",
+     *     summary="Export",
+     *     description="Export a record of Datafeed",
+     *     operationId="exportDatafeed",
+     *     tags={"Datafeed"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Client id",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/Client/properties/id")
+     *     ),
+     *     @OA\Parameter(
+     *         name="platformid",
+     *         in="path",
+     *         description="Platform id",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/Platform/properties/id")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(type="object", ref="#/components/schemas/DataVersion")
+     *     )
+     * )
+     * 
      * Export datafeed.
      *
      * @param int $id
@@ -208,7 +255,7 @@ class DatafeedController extends ActiveApiController
                 throw new HttpException(400, 'Platform not found');
             }
 
-            $resultPath = __DIR__.'/../files/result/'.$client['name'].'_'.$platform['name'].'_feed.csv';
+            $resultPath = __DIR__ . '/../files/result/' . $client['name'] . '_' . $platform['name'] . '_feed.csv';
             $data = [];
             $datafeeds = $this->datafeedRepo->find()->where(['client_id' => $id])->all();
 
