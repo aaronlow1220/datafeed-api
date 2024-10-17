@@ -22,7 +22,8 @@
         "atellitech/utils-yii2": "dev-main",
         "doctrine/annotations": "2.0.x-dev",
         "flow-php/etl": "^0.10.0",
-        "flow-php/etl-adapter-csv": "1.x-dev"
+        "flow-php/etl-adapter-csv": "1.x-dev",
+        "myclabs/php-enum": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

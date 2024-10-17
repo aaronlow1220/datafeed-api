@@ -43,7 +43,8 @@ return [
         'extraPatterns' => [
             'OPTIONS <a:(search|create)>' => 'options',
             'POST <a:(search)>' => '<a>',
-            'POST <id:\d+>/<a:(create)>' => '<a>',
+            'POST <a:(create)>/<id:\d+>' => '<a>',
+            'GET <a:(export)>/<id:\d+>/<platformid:\d+>' => '<a>',
         ],
     ],
     [ // Transformer

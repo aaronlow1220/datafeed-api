@@ -6,7 +6,6 @@ use yii\behaviors\AttributeTypecastBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\db\ActiveQuery;
 
 /**
  * @OA\Schema(
@@ -56,7 +55,7 @@ class Datafeed extends ActiveRecord
     }
 
     /**
-     * Use timestamp to store time of login, update and create
+     * Use timestamp to store time of login, update and create.
      *
      * @return array<int, mixed>
      */
@@ -73,12 +72,12 @@ class Datafeed extends ActiveRecord
                 'class' => BlameableBehavior::class,
                 'defaultValue' => 0,
             ],
-            TimestampBehavior::class
+            TimestampBehavior::class,
         ];
     }
 
     /**
-     * rules
+     * rules.
      *
      * @return array<int, mixed>
      */
@@ -88,26 +87,26 @@ class Datafeed extends ActiveRecord
             [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'status'], 'trim'],
             [['id', 'client_id', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'status'], 'string'],
-            [['status'], 'in', 'range'=>['1', '2']],
-            [['status'], 'default', 'value'=>'1']
+            [['status'], 'in', 'range' => ['1', '2']],
+            [['status'], 'default', 'value' => '1'],
         ];
     }
 
     /**
-     * fields
+     * fields.
      *
      * @return array<string, mixed>
      */
     public function fields()
     {
         $fields = parent::fields();
-        unset($fields['created_by']);
-        unset($fields['updated_by']);
+        unset($fields['created_by'], $fields['updated_by']);
+
         return $fields;
     }
 
     /**
-     * return extra fields
+     * return extra fields.
      *
      * @return string[]
      */

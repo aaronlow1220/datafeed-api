@@ -6,7 +6,6 @@ use yii\behaviors\AttributeTypecastBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\db\ActiveQuery;
 
 /**
  * @OA\Schema(
@@ -47,7 +46,7 @@ class User extends ActiveRecord
     }
 
     /**
-     * Use timestamp to store time of login, update and create
+     * Use timestamp to store time of login, update and create.
      *
      * @return array<int, mixed>
      */
@@ -64,12 +63,12 @@ class User extends ActiveRecord
                 'class' => BlameableBehavior::class,
                 'defaultValue' => 0,
             ],
-            TimestampBehavior::class
+            TimestampBehavior::class,
         ];
     }
 
     /**
-     * rules
+     * rules.
      *
      * @return array<int, mixed>
      */
@@ -79,26 +78,26 @@ class User extends ActiveRecord
             [['sub', 'social_sub', 'social_type', 'username', 'family_name', 'given_name', 'email', 'avatar', 'last_login_ip', 'status'], 'trim'],
             [['id', 'last_login_at', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['sub', 'social_sub', 'social_type', 'username', 'family_name', 'given_name', 'email', 'avatar', 'last_login_ip', 'status'], 'string'],
-            [['status'], 'in', 'range'=>['1', '2']],
-            [['status'], 'default', 'value'=>'1']
+            [['status'], 'in', 'range' => ['1', '2']],
+            [['status'], 'default', 'value' => '1'],
         ];
     }
 
     /**
-     * fields
+     * fields.
      *
      * @return array<string, mixed>
      */
     public function fields()
     {
         $fields = parent::fields();
-        unset($fields['created_by']);
-        unset($fields['updated_by']);
+        unset($fields['created_by'], $fields['updated_by']);
+
         return $fields;
     }
 
     /**
-     * return extra fields
+     * return extra fields.
      *
      * @return string[]
      */

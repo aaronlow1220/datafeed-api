@@ -40,7 +40,7 @@ class TransformerController extends ActiveApiController
     public function actionTransform(string $client, string $platform): array
     {
         try {
-            $filePath = __DIR__.'/../files/original/'. $client .'_feed.csv';
+            $filePath = __DIR__.'/../files/original/'.$client.'_feed.csv';
             $resultPath = __DIR__.'/../files/result/'.$client.'_'.$platform.'_feed.csv';
             $clientInfo = $this->clientRepo->findOne(['name' => $client]);
             $platformInfo = $this->platformRepo->findOne(['name' => $platform]);
