@@ -54,6 +54,37 @@ class DatafeedService
         }
     }
 
+    public function transformDataFromFile(string $filePath, ActiveRecord $client)
+    {
+        try{
+            $fileType = $this->getFileExtension($filePath);
+
+            $data = [];
+
+            switch ($fileType) {
+                case 'xml':
+                    $data = $this->readXml($filePath);
+
+                    break;
+
+                case 'txt':
+                case 'csv':
+                    $data = $this->readCsv($filePath);
+
+                    break;
+
+                default:
+                    throw new Exception('File type not supported.');
+            }
+            
+            return $this->transform($data, $client);
+
+        } catch (Throwable $e) {
+            throw $e;
+        }
+
+    }
+
     /**
      * Transform the data from the file.
      *

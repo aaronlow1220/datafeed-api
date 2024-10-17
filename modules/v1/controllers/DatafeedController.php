@@ -160,32 +160,13 @@ class DatafeedController extends ActiveApiController
                 $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
             }
 
+            $data = [];
+
             $filePath = __DIR__.'/../files/original/';
 
             $filePath = $this->datafeedService->readFeedFile($filePath);
 
-            $fileType = $this->datafeedService->getFileExtension($filePath);
-
-            $data = [];
-            $processedData = [];
-
-            switch ($fileType) {
-                case 'xml':
-                    $data = $this->datafeedService->readXml($filePath);
-
-                    break;
-
-                case 'txt':
-                case 'csv':
-                    $data = $this->datafeedService->readCsv($filePath);
-
-                    break;
-
-                default:
-                    throw new HttpException(400, 'File type not supported.');
-            }
-
-            $processedData = $this->datafeedService->transform($data, $client);
+            $processedData = $this->datafeedService->transformDataFromFile($filePath, $client);
 
             $finalDataVersion = $this->dataVersionRepo->findOne(['client_id' => $id]);
 
