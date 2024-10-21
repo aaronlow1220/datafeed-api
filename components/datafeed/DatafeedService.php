@@ -25,9 +25,7 @@ class DatafeedService
      *
      * @param DatafeedRepo $datafeedRepo
      */
-    public function __construct(private DatafeedRepo $datafeedRepo)
-    {
-    }
+    public function __construct(private DatafeedRepo $datafeedRepo) {}
 
     /**
      * Create datafeed.
@@ -54,9 +52,17 @@ class DatafeedService
         }
     }
 
-    public function transformDataFromFile(string $filePath, ActiveRecord $client)
+    /**
+     * Transform the data from the file into database schema.
+     *
+     * @param string $filePath
+     * @param ActiveRecord $client
+     *
+     * @return array<int, mixed>
+     */
+    public function transformDataFromFile(string $filePath, ActiveRecord $client): array
     {
-        try{
+        try {
             $fileType = $this->getFileExtension($filePath);
 
             $data = [];
@@ -76,13 +82,11 @@ class DatafeedService
                 default:
                     throw new Exception('File type not supported.');
             }
-            
-            return $this->transform($data, $client);
 
+            return $this->transform($data, $client);
         } catch (Throwable $e) {
             throw $e;
         }
-
     }
 
     /**
@@ -173,7 +177,7 @@ class DatafeedService
         // Select only the columns that are required by the platform
         $etl->select(...array_keys($platformInfo));
 
-        foreach($platformInfo as $key => $value) {
+        foreach ($platformInfo as $key => $value) {
             $etl->rename($key, $value);
         }
 
@@ -249,7 +253,7 @@ class DatafeedService
             $fileDetected = false;
             foreach ($files as $file) {
                 if (false !== strpos($file, '_feed')) {
-                    $filePath = $directoryPath . $file;
+                    $filePath = $directoryPath.$file;
 
                     break;
                 }
@@ -274,9 +278,7 @@ class DatafeedService
                 throw new Exception('File does not have an extension.');
             }
 
-            $fileType = $fileInfo['extension'];
-
-            return $fileType;
+            return $fileInfo['extension'];
         } catch (Throwable $e) {
             throw $e;
         }

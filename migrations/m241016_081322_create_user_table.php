@@ -8,11 +8,16 @@ use yii\db\Migration;
 class m241016_081322_create_user_table extends Migration
 {
     /**
+     * @var string
+     */
+    public $table = 'user';
+
+    /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('{{%user}}', [
+        $this->createTable($this->table, [
             'id' => $this->bigPrimaryKey()->unsigned()->notNull()->comment('Auto increment id'),
             'sub' => $this->string(20)->notNull()->comment('Subject of Cyntelli auth'),
             'social_sub' => $this->string(128)->null()->comment('Subject of social auth'),
@@ -37,6 +42,6 @@ class m241016_081322_create_user_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%user}}');
+        $this->dropTable($this->table);
     }
 }

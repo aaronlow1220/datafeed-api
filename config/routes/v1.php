@@ -58,4 +58,15 @@ return [
             'GET <a:(transform)>/<client>/<platform>' => '<a>',
         ],
     ],
+    [ // File
+        'class' => 'yii\rest\UrlRule',
+        'controller' => [
+            'file' => 'v1/file',
+        ],
+        'except' => ['index', 'delete', 'create'],
+        'extraPatterns' => [
+            'OPTIONS <a:(upload)>' => 'options',
+            'POST <a:(upload)>/<fileid:\d+>' => '<a>',
+        ],
+    ],
 ];

@@ -6,8 +6,8 @@ use Throwable;
 use app\components\client\ClientRepo;
 use app\components\datafeed\DatafeedRepo;
 use app\components\datafeed\DatafeedService;
-use app\components\version\DataVersionRepo;
 use app\components\platform\PlatformRepo;
+use app\components\version\DataVersionRepo;
 use v1\components\ActiveApiController;
 use yii\base\Module;
 use yii\web\HttpException;
@@ -115,6 +115,7 @@ class DatafeedController extends ActiveApiController
      * @param DatafeedRepo $datafeedRepo
      * @param ClientRepo $clientRepo
      * @param PlatformRepo $platformRepo
+     * @param DataVersionRepo $dataVersionRepo
      * @param array<string, mixed> $config
      * @return void
      */
@@ -157,7 +158,7 @@ class DatafeedController extends ActiveApiController
      *         @OA\JsonContent(type="object", ref="#/components/schemas/DataVersion")
      *     )
      * )
-     * 
+     *
      * Create datafeed with a file.
      *
      * @param int $id
@@ -175,14 +176,14 @@ class DatafeedController extends ActiveApiController
 
             if (!$initialDataVersion) {
                 $dataVersion = [
-                    'client_id' => $client['id']
+                    'client_id' => $client['id'],
                 ];
                 $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
             }
 
             $data = [];
 
-            $filePath = __DIR__ . '/../../../runtime/files/original/';
+            $filePath = __DIR__.'/../../../runtime/files/original/';
 
             $filePath = $this->datafeedService->readFeedFile($filePath);
 
@@ -190,7 +191,7 @@ class DatafeedController extends ActiveApiController
 
             $finalDataVersion = $this->dataVersionRepo->findOne(['client_id' => $id]);
 
-            if ($initialDataVersion["hash"] !== $finalDataVersion["hash"]) {
+            if ($initialDataVersion['hash'] !== $finalDataVersion['hash']) {
                 throw new HttpException(400, 'Data version not match');
             }
 
@@ -201,9 +202,10 @@ class DatafeedController extends ActiveApiController
             ];
 
             $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
+
             return $processedData;
         } catch (Throwable $e) {
-            throw new HttpException(400, 'Create datafeed failed, ' . $e->getMessage());
+            throw new HttpException(400, 'Create datafeed failed, '.$e->getMessage());
         }
     }
 
@@ -234,7 +236,7 @@ class DatafeedController extends ActiveApiController
      *         @OA\JsonContent(type="object", ref="#/components/schemas/DataVersion")
      *     )
      * )
-     * 
+     *
      * Export datafeed.
      *
      * @param int $id
@@ -255,12 +257,12 @@ class DatafeedController extends ActiveApiController
                 throw new HttpException(400, 'Platform not found');
             }
 
-            $resultPath = __DIR__ . '/../../../runtime/files/result/' . $client['name'] . '_' . $platform['name'] . '_feed.csv';
+            $resultPath = __DIR__.'/../../../runtime/files/result/'.$client['name'].'_'.$platform['name'].'_feed.csv';
             $data = [];
             $datafeeds = $this->datafeedRepo->find()->where(['client_id' => $id])->all();
 
             foreach ($datafeeds as $datafeed) {
-                $data[] = $datafeed->attributes;
+                $data[] = $datafeed['attributes'];
             }
 
             if (!$data) {

@@ -8,11 +8,16 @@ use yii\db\Migration;
 class m241016_075808_create_datafeed_table extends Migration
 {
     /**
+     * @var string
+     */
+    public $table = 'datafeed';
+
+    /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('{{%datafeed}}', [
+        $this->createTable($this->table, [
             'id' => $this->bigPrimaryKey()->unsigned()->notNull()->comment('Auto increment id'),
             'client_id' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: client.id'),
             'datafeedid' => $this->string(255)->notNull()->comment('Datafeed id'),
@@ -47,6 +52,6 @@ class m241016_075808_create_datafeed_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%datafeed}}');
+        $this->dropTable($this->table);
     }
 }
