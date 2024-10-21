@@ -66,9 +66,9 @@ class DataVersion extends ActiveRecord
     public function rules()
     {
         return [
-            [['hash'], 'trim'],
+            [['filename', 'hash'], 'trim'],
             [['id', 'client_id', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['hash'], 'string'],
+            [['filename', 'hash'], 'string'],
         ];
     }
 

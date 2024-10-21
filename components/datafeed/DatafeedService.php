@@ -71,6 +71,8 @@ class DatafeedService
 
             if (!$initialDataVersion) {
                 $dataVersion = [
+                    'filename' => basename($filePath),
+                    'hash' => hash_file('md5', $filePath),
                     'client_id' => $client['id'],
                 ];
                 $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
@@ -87,6 +89,7 @@ class DatafeedService
             $this->create($client, $processedData);
 
             $dataVersion = [
+                'filename' => basename($filePath),
                 'hash' => hash_file('md5', $filePath),
             ];
 
