@@ -159,7 +159,7 @@ class DatafeedService
      */
     public function export(array $data, ActiveRecord $platform, ActiveRecord $client, string $resultPath): void
     {
-        $platform = json_decode($platform['data'], true);
+        $platformInfo = json_decode($platform['data'], true);
 
         foreach ($platform as $key => $value) {
             if ('' === $value) {
@@ -171,7 +171,11 @@ class DatafeedService
             ->read(from_array($data));
 
         // Select only the columns that are required by the platform
-        $etl->select(...array_keys($platform));
+        $etl->select(...array_keys($platformInfo));
+
+        foreach($platformInfo as $key => $value) {
+            $etl->rename($key, $value);
+        }
 
         // Load to CSV
         $etl->load(to_csv($resultPath))->run();

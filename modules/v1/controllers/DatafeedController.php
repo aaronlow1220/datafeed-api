@@ -182,7 +182,7 @@ class DatafeedController extends ActiveApiController
 
             $data = [];
 
-            $filePath = __DIR__ . '/../files/original/';
+            $filePath = __DIR__ . '/../../../runtime/files/original/';
 
             $filePath = $this->datafeedService->readFeedFile($filePath);
 
@@ -255,7 +255,7 @@ class DatafeedController extends ActiveApiController
                 throw new HttpException(400, 'Platform not found');
             }
 
-            $resultPath = __DIR__ . '/../files/result/' . $client['name'] . '_' . $platform['name'] . '_feed.csv';
+            $resultPath = __DIR__ . '/../../../runtime/files/result/' . $client['name'] . '_' . $platform['name'] . '_feed.csv';
             $data = [];
             $datafeeds = $this->datafeedRepo->find()->where(['client_id' => $id])->all();
 
