@@ -11,6 +11,7 @@ use function Flow\ETL\DSL\to_array;
 
 use SimpleXMLElement;
 use Throwable;
+use app\components\version\DataVersionRepo;
 use yii\db\ActiveRecord;
 
 /**
@@ -24,8 +25,9 @@ class DatafeedService
      * DatasetService constructor.
      *
      * @param DatafeedRepo $datafeedRepo
+     * @param DataVersionRepo $dataVersionRepo
      */
-    public function __construct(private DatafeedRepo $datafeedRepo) {}
+    public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo) {}
 
     /**
      * Create datafeed.
@@ -48,6 +50,50 @@ class DatafeedService
         } catch (Throwable $e) {
             $transaction->rollBack();
 
+            throw $e;
+        }
+    }
+
+    /**
+     * Create datafeed from file.
+     *
+     * @param ActiveRecord $client
+     * @param string $filePath
+     *
+     * @return array<int, mixed>
+     */
+    public function createFromFile(ActiveRecord $client, string $filePath): array
+    {
+        try {
+            $data = [];
+            $initialDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
+            $filePath = $this->readFeedFile($filePath);
+
+            if (!$initialDataVersion) {
+                $dataVersion = [
+                    'client_id' => $client['id'],
+                ];
+                $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
+            }
+
+            $processedData = $this->transformDataFromFile($filePath, $client);
+
+            $finalDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
+
+            if ($initialDataVersion['hash'] !== $finalDataVersion['hash']) {
+                throw new Exception('Data version not match', 400);
+            }
+
+            $this->create($client, $processedData);
+
+            $dataVersion = [
+                'hash' => hash_file('md5', $filePath),
+            ];
+
+            $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
+
+            return $processedData;
+        } catch (Throwable $e) {
             throw $e;
         }
     }
@@ -154,15 +200,25 @@ class DatafeedService
     /**
      * Export the data to a file.
      *
-     * @param array<int, mixed> $data
      * @param ActiveRecord $platform
      * @param ActiveRecord $client
      * @param string $resultPath
      *
      * @return void
      */
-    public function export(array $data, ActiveRecord $platform, ActiveRecord $client, string $resultPath): void
+    public function export(ActiveRecord $platform, ActiveRecord $client, string $resultPath): void
     {
+        $data = [];
+        $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->all();
+
+        foreach ($datafeeds as $datafeed) {
+            $data[] = $datafeed['attributes'];
+        }
+
+        if (!$data) {
+            throw new Exception('Datafeed not found', 400);
+        }
+
         $platformInfo = json_decode($platform['data'], true);
 
         foreach ($platform as $key => $value) {
@@ -250,7 +306,6 @@ class DatafeedService
         try {
             $filePath = null;
             $files = scandir($directoryPath);
-            $fileDetected = false;
             foreach ($files as $file) {
                 if (false !== strpos($file, '_feed')) {
                     $filePath = $directoryPath.$file;

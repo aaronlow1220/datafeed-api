@@ -4,10 +4,8 @@ namespace v1\controllers;
 
 use Throwable;
 use app\components\client\ClientRepo;
-use app\components\datafeed\DatafeedRepo;
 use app\components\datafeed\DatafeedService;
 use app\components\platform\PlatformRepo;
-use app\components\version\DataVersionRepo;
 use v1\components\ActiveApiController;
 use yii\base\Module;
 use yii\web\HttpException;
@@ -112,14 +110,12 @@ class DatafeedController extends ActiveApiController
      * @param string $id
      * @param Module $module
      * @param DatafeedService $datafeedService
-     * @param DatafeedRepo $datafeedRepo
      * @param ClientRepo $clientRepo
      * @param PlatformRepo $platformRepo
-     * @param DataVersionRepo $dataVersionRepo
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private DatafeedService $datafeedService, private DatafeedRepo $datafeedRepo, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, private DataVersionRepo $dataVersionRepo, $config = [])
+    public function __construct($id, $module, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -167,43 +163,14 @@ class DatafeedController extends ActiveApiController
     public function actionCreate(int $id): array
     {
         try {
+            $filePath = __DIR__.'/../../../runtime/files/original/';
             $client = $this->clientRepo->findOne($id);
-            $initialDataVersion = $this->dataVersionRepo->findOne(['client_id' => $id]);
 
             if (!$client) {
                 throw new HttpException(404, 'Client not found');
             }
 
-            if (!$initialDataVersion) {
-                $dataVersion = [
-                    'client_id' => $client['id'],
-                ];
-                $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
-            }
-
-            $data = [];
-
-            $filePath = __DIR__.'/../../../runtime/files/original/';
-
-            $filePath = $this->datafeedService->readFeedFile($filePath);
-
-            $processedData = $this->datafeedService->transformDataFromFile($filePath, $client);
-
-            $finalDataVersion = $this->dataVersionRepo->findOne(['client_id' => $id]);
-
-            if ($initialDataVersion['hash'] !== $finalDataVersion['hash']) {
-                throw new HttpException(400, 'Data version not match');
-            }
-
-            $this->datafeedService->create($client, $processedData);
-
-            $dataVersion = [
-                'hash' => hash_file('md5', $filePath),
-            ];
-
-            $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
-
-            return $processedData;
+            return $this->datafeedService->createFromFile($client, $filePath);
         } catch (Throwable $e) {
             throw new HttpException(400, 'Create datafeed failed, '.$e->getMessage());
         }
@@ -258,18 +225,8 @@ class DatafeedController extends ActiveApiController
             }
 
             $resultPath = __DIR__.'/../../../runtime/files/result/'.$client['name'].'_'.$platform['name'].'_feed.csv';
-            $data = [];
-            $datafeeds = $this->datafeedRepo->find()->where(['client_id' => $id])->all();
 
-            foreach ($datafeeds as $datafeed) {
-                $data[] = $datafeed['attributes'];
-            }
-
-            if (!$data) {
-                throw new HttpException(400, 'Datafeed not found');
-            }
-
-            $this->datafeedService->export($data, $platform, $client, $resultPath);
+            $this->datafeedService->export($platform, $client, $resultPath);
 
             return;
         } catch (Throwable $e) {
