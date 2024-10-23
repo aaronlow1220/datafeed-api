@@ -27,9 +27,7 @@ class DatafeedService
      * @param DatafeedRepo $datafeedRepo
      * @param DataVersionRepo $dataVersionRepo
      */
-    public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo)
-    {
-    }
+    public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo) {}
 
     /**
      * Create datafeed.
@@ -76,6 +74,7 @@ class DatafeedService
             $transaction->commit();
         } catch (Throwable $e) {
             $transaction->rollBack();
+
             throw $e;
         }
     }
@@ -233,6 +232,7 @@ class DatafeedService
      * @param ActiveRecord $platform
      * @param ActiveRecord $client
      * @param string $resultPath
+     * @param array<string, mixed> $filter
      *
      * @return string
      */
@@ -340,7 +340,7 @@ class DatafeedService
             $files = scandir($directoryPath);
             foreach ($files as $file) {
                 if (false !== strpos($file, '_feed')) {
-                    $filePath = $directoryPath . '/' . $file;
+                    $filePath = $directoryPath.'/'.$file;
 
                     break;
                 }

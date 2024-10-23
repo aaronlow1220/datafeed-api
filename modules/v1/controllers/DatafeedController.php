@@ -2,10 +2,10 @@
 
 namespace v1\controllers;
 
-use app\components\core\FileRepo;
-use Yii;
 use Throwable;
+use Yii;
 use app\components\client\ClientRepo;
+use app\components\core\FileRepo;
 use app\components\datafeed\DatafeedService;
 use app\components\platform\PlatformRepo;
 use v1\components\ActiveApiController;
@@ -115,6 +115,7 @@ class DatafeedController extends ActiveApiController
      * @param DatafeedService $datafeedService
      * @param ClientRepo $clientRepo
      * @param PlatformRepo $platformRepo
+     * @param FileRepo $fileRepo
      * @param array<string, mixed> $config
      * @return void
      */
@@ -160,9 +161,9 @@ class DatafeedController extends ActiveApiController
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
+     *         description="Successful operation",
      *         @OA\JsonContent(type="object", ref="#/components/schemas/Datafeed")
-     *     )
+     *    )
      * )
      *
      * Export datafeed.
@@ -188,7 +189,7 @@ class DatafeedController extends ActiveApiController
                 throw new HttpException(400, 'Platform not found');
             }
 
-            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', __DIR__ . '/../../../runtime/files/result', uniqid(), $client['name'], $platform['name']);
+            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', __DIR__.'/../../../runtime/files/result', uniqid(), $client['name'], $platform['name']);
 
             $this->datafeedService->export($platform, $client, $resultPath, $params);
 

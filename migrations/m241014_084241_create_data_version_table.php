@@ -29,7 +29,7 @@ class m241014_084241_create_data_version_table extends Migration
             'updated_at' => $this->integer(10)->unsigned()->notNull()->comment('unixtime'),
         ]);
 
-        $this->createIndex("INDEX_CLIENT_ID", $this->table, "client_id", true);
+        $this->createIndex('INDEX_CLIENT_ID', $this->table, 'client_id', true);
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace v1\controllers;
 
-use Yii;
 use Throwable;
+use Yii;
 use app\components\FileEntity;
 use app\components\client\ClientRepo;
 use app\components\core\FileRepo;
@@ -12,6 +12,7 @@ use app\components\datafeed\DatafeedService;
 use v1\components\ActiveApiController;
 use yii\base\Module;
 use yii\web\HttpException;
+use yii\web\Response;
 use yii\web\UploadedFile;
 
 /**
@@ -116,13 +117,21 @@ class FileController extends ActiveApiController
         }
     }
 
-    public function actionFeed(string $filename){
-        $file = $this->fileRepo->findOne(['filename' => $filename . '.csv']);
+    /**
+     * Feed a file.
+     *
+     * @param string $filename
+     *
+     * @return Response
+     */
+    public function actionFeed(string $filename): Response
+    {
+        $file = $this->fileRepo->findOne(['filename' => $filename.'.csv']);
 
         if (file_exists($file['path'])) {
             return Yii::$app->response->sendFile($file['path']);
-        } else {
-            throw new HttpException(404, 'File not found');
         }
+
+        throw new HttpException(404, 'File not found');
     }
 }

@@ -15,7 +15,7 @@ use yii\web\HttpException;
  *     name="Platform",
  *     description="Everything about your Platform",
  * )
- * 
+ *
  * @OA\Get(
  *     path="/platform",
  *     summary="List",
