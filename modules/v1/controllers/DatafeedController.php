@@ -2,6 +2,7 @@
 
 namespace v1\controllers;
 
+use Yii;
 use Throwable;
 use app\components\client\ClientRepo;
 use app\components\datafeed\DatafeedService;
@@ -157,8 +158,8 @@ class DatafeedController extends ActiveApiController
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(type="object", ref="#/components/schemas/DataVersion")
+     *         description="Successful operation"
+     *         @OA\JsonContent(type="object", ref="#/components/schemas/Datafeed")
      *     )
      * )
      *
@@ -166,10 +167,13 @@ class DatafeedController extends ActiveApiController
      *
      * @param int $id
      * @param string $platformid
-     * @return void
+     * @return array
      */
-    public function actionExport(int $id, string $platformid): void
+    public function actionExport(int $id, string $platformid): array
     {
+        $params = Yii::$app->request->get();
+        unset($params['id'], $params['platformid']);
+
         try {
             $client = $this->clientRepo->findOne(['id' => $id]);
             $platform = $this->platformRepo->findOne(['id' => $platformid]);
@@ -182,11 +186,10 @@ class DatafeedController extends ActiveApiController
                 throw new HttpException(400, 'Platform not found');
             }
 
-            $resultPath = __DIR__.'/../../../runtime/files/result/'.$client['name'].'_'.$platform['name'].'_feed.csv';
+            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', __DIR__ . '/../../../runtime/files/result', uniqid(), $client['name'], $platform['name']);
 
-            $this->datafeedService->export($platform, $client, $resultPath);
-
-            return;
+            $this->datafeedService->export($platform, $client, $resultPath, $params);
+            return ['result' => $resultPath];
         } catch (Throwable $e) {
             throw new HttpException(400, 'Export datafeed failed');
         }

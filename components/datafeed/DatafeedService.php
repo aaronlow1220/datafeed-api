@@ -234,12 +234,12 @@ class DatafeedService
      * @param ActiveRecord $client
      * @param string $resultPath
      *
-     * @return void
+     * @return string
      */
-    public function export(ActiveRecord $platform, ActiveRecord $client, string $resultPath): void
+    public function export(ActiveRecord $platform, ActiveRecord $client, string $resultPath, array $filter): string
     {
         $data = [];
-        $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->all();
+        $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter)->all();
 
         foreach ($datafeeds as $datafeed) {
             $data[] = $datafeed['attributes'];
@@ -269,6 +269,8 @@ class DatafeedService
 
         // Load to CSV
         $etl->load(to_csv($resultPath))->run();
+
+        return $resultPath;
     }
 
     /**

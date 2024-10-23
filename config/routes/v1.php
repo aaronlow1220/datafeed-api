@@ -42,6 +42,7 @@ return [
         ],
         'extraPatterns' => [
             'OPTIONS <a:(search)>' => 'options',
+            'OPTIONS <a:(export)>/<id:\d+>/<platformid:\d+>' => 'options',
             'POST <a:(search)>' => '<a>',
             'GET <a:(export)>/<id:\d+>/<platformid:\d+>' => '<a>',
         ],
