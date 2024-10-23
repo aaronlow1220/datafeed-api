@@ -2,6 +2,7 @@
 
 namespace v1\controllers;
 
+use app\components\core\FileRepo;
 use Yii;
 use Throwable;
 use app\components\client\ClientRepo;
@@ -9,6 +10,7 @@ use app\components\datafeed\DatafeedService;
 use app\components\platform\PlatformRepo;
 use v1\components\ActiveApiController;
 use yii\base\Module;
+use yii\db\ActiveRecord;
 use yii\web\HttpException;
 
 /**
@@ -116,7 +118,7 @@ class DatafeedController extends ActiveApiController
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, $config = [])
+    public function __construct($id, $module, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, private FileRepo $fileRepo, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -167,9 +169,9 @@ class DatafeedController extends ActiveApiController
      *
      * @param int $id
      * @param string $platformid
-     * @return array
+     * @return ActiveRecord
      */
-    public function actionExport(int $id, string $platformid): array
+    public function actionExport(int $id, string $platformid): ActiveRecord
     {
         $params = Yii::$app->request->get();
         unset($params['id'], $params['platformid']);
@@ -189,7 +191,16 @@ class DatafeedController extends ActiveApiController
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', __DIR__ . '/../../../runtime/files/result', uniqid(), $client['name'], $platform['name']);
 
             $this->datafeedService->export($platform, $client, $resultPath, $params);
-            return ['result' => $resultPath];
+
+            $data = [
+                'mime' => 'text/csv',
+                'extension' => 'csv',
+                'filename' => basename($resultPath),
+                'path' => $resultPath,
+                'size' => filesize($resultPath),
+            ];
+
+            return $this->fileRepo->create($data);
         } catch (Throwable $e) {
             throw new HttpException(400, 'Export datafeed failed');
         }

@@ -65,7 +65,9 @@ return [
         ],
         'extraPatterns' => [
             'OPTIONS <a:(upload)>/<id:\d+>' => 'options',
+            'OPTIONS <a:(feed)>/<filename>' => 'options',
             'POST <a:(upload)>/<id:\d+>' => '<a>',
+            'GET <a:(feed)>/<filename>' => '<a>',
         ],
     ],
 ];

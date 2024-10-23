@@ -2,9 +2,11 @@
 
 namespace v1\controllers;
 
+use Yii;
 use Throwable;
 use app\components\FileEntity;
 use app\components\client\ClientRepo;
+use app\components\core\FileRepo;
 use app\components\core\FileService;
 use app\components\datafeed\DatafeedService;
 use v1\components\ActiveApiController;
@@ -62,13 +64,14 @@ class FileController extends ActiveApiController
      *
      * @param string $id
      * @param Module $module
+     * @param FileRepo $fileRepo
      * @param FileService $fileService
      * @param DatafeedService $datafeedService
      * @param ClientRepo $clientRepo
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private FileService $fileService, private DatafeedService $datafeedService, private ClientRepo $clientRepo, $config = [])
+    public function __construct($id, $module, private FileRepo $fileRepo, private FileService $fileService, private DatafeedService $datafeedService, private ClientRepo $clientRepo, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -110,6 +113,16 @@ class FileController extends ActiveApiController
             return $this->datafeedService->createFromFile($client, $upload['path']);
         } catch (Throwable $e) {
             throw $e;
+        }
+    }
+
+    public function actionFeed(string $filename){
+        $file = $this->fileRepo->findOne(['filename' => $filename . '.csv']);
+
+        if (file_exists($file['path'])) {
+            return Yii::$app->response->sendFile($file['path']);
+        } else {
+            throw new HttpException(404, 'File not found');
         }
     }
 }
