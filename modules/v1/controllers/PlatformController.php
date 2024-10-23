@@ -136,8 +136,6 @@ class PlatformController extends ActiveApiController
     {
         $actions = parent::actions();
 
-        unset($actions['index']);
-
         return $actions;
     }
 

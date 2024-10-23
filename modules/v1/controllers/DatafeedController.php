@@ -163,7 +163,7 @@ class DatafeedController extends ActiveApiController
     public function actionCreate(int $id): array
     {
         try {
-            $filePath = __DIR__.'/../../../runtime/files/original/';
+            $filePath = __DIR__.'/../../../runtime/files/original';
             $client = $this->clientRepo->findOne($id);
 
             if (!$client) {

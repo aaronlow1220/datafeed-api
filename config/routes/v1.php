@@ -7,7 +7,7 @@ return [
         'controller' => [
             'client' => 'v1/client',
         ],
-        'except' => ['index', 'delete'],
+        'except' => ['delete'],
         'extraPatterns' => [
             'OPTIONS <a:(search)>' => 'options',
             'POST <a:(search)>' => '<a>',
@@ -18,7 +18,7 @@ return [
         'controller' => [
             'platform' => 'v1/platform',
         ],
-        'except' => ['index', 'delete'],
+        'except' => ['delete'],
         'extraPatterns' => [
             'OPTIONS <a:(search)>' => 'options',
             'POST <a:(search)>' => '<a>',
@@ -56,6 +56,16 @@ return [
             'OPTIONS <a:(search)>' => 'options',
             'POST <a:(search)>' => '<a>',
             'GET <a:(transform)>/<client>/<platform>' => '<a>',
+        ],
+    ],
+    [ // File
+        'class' => 'yii\rest\UrlRule',
+        'controller' => [
+            'file' => 'v1/file',
+        ],
+        'extraPatterns' => [
+            'OPTIONS <a:(upload)>/<id:\d+>' => 'options',
+            'POST <a:(upload)>/<id:\d+>' => '<a>',
         ],
     ],
 ];

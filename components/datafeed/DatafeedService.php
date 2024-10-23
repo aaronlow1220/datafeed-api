@@ -311,7 +311,7 @@ class DatafeedService
             $files = scandir($directoryPath);
             foreach ($files as $file) {
                 if (false !== strpos($file, '_feed')) {
-                    $filePath = $directoryPath.$file;
+                    $filePath = $directoryPath."/".$file;
 
                     break;
                 }
