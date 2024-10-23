@@ -41,7 +41,7 @@ final class FileService
             throw new Exception("Create directory({$this->destPath}), failed");
         }
 
-        $dest = sprintf('%s/%s_%s_feed.%s', $this->destPath, date('Ymd'), uniqid(), $file->getExtension());
+        $dest = sprintf('%s/%s_%s_%s_feed.%s', $this->destPath, date('Ymd'), uniqid(), $file->getName(), $file->getExtension());
         if (!copy($file->getFile(), $dest)) {
             throw new Exception('Store file, failed');
         }

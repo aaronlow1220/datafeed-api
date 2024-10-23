@@ -27,7 +27,9 @@ class DatafeedService
      * @param DatafeedRepo $datafeedRepo
      * @param DataVersionRepo $dataVersionRepo
      */
-    public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo) {}
+    public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo)
+    {
+    }
 
     /**
      * Create datafeed.
@@ -40,16 +42,40 @@ class DatafeedService
     public function create(ActiveRecord $client, array $data)
     {
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
+        $clientDatafeed = $this->datafeedRepo->findByClientId($client['id'])->all();
+
+        // Create a map of existing datafeeds
+        $existingDatafeeds = [];
+        foreach ($clientDatafeed as $datafeed) {
+            $existingDatafeeds[$datafeed['datafeedid']] = $datafeed;
+        }
 
         try {
+            $newDatafeedIds = [];
             foreach ($data as $value) {
                 $value['client_id'] = $client['id'];
-                $this->datafeedRepo->create($value);
+                $datafeedId = $value['datafeedid'];
+                $newDatafeedIds[] = $datafeedId;
+
+                if (isset($existingDatafeeds[$datafeedId])) {
+                    // Update existing datafeed
+                    $this->datafeedRepo->update($existingDatafeeds[$datafeedId]['id'], $value);
+                } else {
+                    // Create new datafeed
+                    $this->datafeedRepo->create($value);
+                }
             }
+
+            // Update status to 0 for datafeeds not in the new data array
+            foreach ($existingDatafeeds as $datafeedId => $datafeed) {
+                if (!in_array($datafeedId, $newDatafeedIds)) {
+                    $this->datafeedRepo->update($datafeed['id'], ['status' => 0]);
+                }
+            }
+
             $transaction->commit();
         } catch (Throwable $e) {
             $transaction->rollBack();
-
             throw $e;
         }
     }
@@ -67,13 +93,13 @@ class DatafeedService
         try {
             $data = [];
             $initialDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
-            $filePath = $this->readFeedFile($filePath);
 
             if (!$initialDataVersion) {
                 $dataVersion = [
                     'filename' => basename($filePath),
                     'hash' => hash_file('md5', $filePath),
                     'client_id' => $client['id'],
+                    'version' => 1,
                 ];
                 $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
             }
@@ -91,6 +117,7 @@ class DatafeedService
             $dataVersion = [
                 'filename' => basename($filePath),
                 'hash' => hash_file('md5', $filePath),
+                'version' => $finalDataVersion['version'] + 1,
             ];
 
             $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
@@ -311,7 +338,7 @@ class DatafeedService
             $files = scandir($directoryPath);
             foreach ($files as $file) {
                 if (false !== strpos($file, '_feed')) {
-                    $filePath = $directoryPath.'/'.$file;
+                    $filePath = $directoryPath . '/' . $file;
 
                     break;
                 }

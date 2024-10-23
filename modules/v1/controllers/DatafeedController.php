@@ -136,48 +136,6 @@ class DatafeedController extends ActiveApiController
 
     /**
      * @OA\Post(
-     *     path="/datafeed/create/{id}",
-     *     summary="Create",
-     *     description="Create a record of Datafeed",
-     *     operationId="createDatafeed",
-     *     tags={"Datafeed"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Client id",
-     *         required=true,
-     *         @OA\Schema(ref="#/components/schemas/Client/properties/id")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(type="object", ref="#/components/schemas/DataVersion")
-     *     )
-     * )
-     *
-     * Create datafeed with a file.
-     *
-     * @param int $id
-     * @return array<int, mixed>
-     */
-    public function actionCreate(int $id): array
-    {
-        try {
-            $filePath = __DIR__.'/../../../runtime/files/original';
-            $client = $this->clientRepo->findOne($id);
-
-            if (!$client) {
-                throw new HttpException(404, 'Client not found');
-            }
-
-            return $this->datafeedService->createFromFile($client, $filePath);
-        } catch (Throwable $e) {
-            throw new HttpException(400, 'Create datafeed failed, '.$e->getMessage());
-        }
-    }
-
-    /**
-     * @OA\Post(
      *     path="/datafeed/export/{id}/{platformid}",
      *     summary="Export",
      *     description="Export a record of Datafeed",

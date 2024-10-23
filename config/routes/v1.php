@@ -41,9 +41,8 @@ return [
             'datafeed' => 'v1/datafeed',
         ],
         'extraPatterns' => [
-            'OPTIONS <a:(search|create)>' => 'options',
+            'OPTIONS <a:(search)>' => 'options',
             'POST <a:(search)>' => '<a>',
-            'POST <a:(create)>/<id:\d+>' => '<a>',
             'GET <a:(export)>/<id:\d+>/<platformid:\d+>' => '<a>',
         ],
     ],

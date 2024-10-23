@@ -107,7 +107,7 @@ class FileController extends ActiveApiController
         try {
             $upload = $this->fileService->upload($file);
 
-            return $this->datafeedService->createFromFile($client, dirname($upload['path']));
+            return $this->datafeedService->createFromFile($client, $upload['path']);
         } catch (Throwable $e) {
             throw $e;
         }

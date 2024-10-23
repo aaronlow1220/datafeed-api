@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  *   required={"id", "client_id", "hash", "created_by", "created_at", "updated_by", "updated_at"},
  *   @OA\Property(property="id", type="integer", description="Auto increment id #autoIncrement #pk"),
  *   @OA\Property(property="client_id", type="integer", description="Client id"),
+ *   @OA\Property(property="version", type="integer", description="Version"),
  *   @OA\Property(property="hash", type="string", description="Data hash", maxLength=255),
  *   @OA\Property(property="created_by", type="integer", description="ref: > user.id"),
  *   @OA\Property(property="created_at", type="integer", description="unixtime"),
@@ -67,7 +68,7 @@ class DataVersion extends ActiveRecord
     {
         return [
             [['filename', 'hash'], 'trim'],
-            [['id', 'client_id', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
+            [['id', 'client_id', 'version', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['filename', 'hash'], 'string'],
         ];
     }
