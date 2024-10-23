@@ -134,9 +134,7 @@ class PlatformController extends ActiveApiController
      */
     public function actions()
     {
-        $actions = parent::actions();
-
-        return $actions;
+        return parent::actions();
     }
 
     /**

@@ -17,6 +17,50 @@ use yii\web\HttpException;
  * )
  *
  * @OA\Get(
+ *     path="/client",
+ *     summary="List",
+ *     description="List all Client",
+ *     operationId="listClient",
+ *     tags={"Client"},
+ *     @OA\Parameter(
+ *         name="page",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/page")
+ *     ),
+ *     @OA\Parameter(
+ *         name="pageSize",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/pageSize")
+ *     ),
+ *     @OA\Parameter(
+ *         name="sort",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/sort")
+ *     ),
+ *     @OA\Parameter(
+ *         name="fields",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/fields")
+ *     ),
+ *     @OA\Parameter(
+ *         name="expand",
+ *         in="query",
+ *         @OA\Schema(type="string", enum={"xxxx"}, description="Query related models, using comma(,) be seperator")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Successful operation",
+ *         @OA\MediaType(
+ *             mediaType="application/json",
+ *             @OA\Schema(
+ *              @OA\Property(property="_data", type="array", @OA\Items(ref="#/components/schemas/Client")),
+ *              @OA\Property(property="_meta", type="object", ref="#/components/schemas/Pagination")
+ *             )
+ *         )
+ *     )
+ * )
+ *
+ * @OA\Get(
  *     path="/client/{id}",
  *     summary="Get",
  *     description="Get Client by particular id",
@@ -134,9 +178,7 @@ class ClientController extends ActiveApiController
      */
     public function actions()
     {
-        $actions = parent::actions();
-
-        return $actions;
+        return parent::actions();
     }
 
     /**
