@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8b75eda363ed33122d5b9ef79bf23e7",
+    "content-hash": "af45eecb0b37633fafb36075285eab32",
     "packages": [
         {
             "name": "atellitech/utils-yii2",
@@ -881,16 +881,16 @@
         },
         {
             "name": "myclabs/php-enum",
-            "version": "dev-master",
+            "version": "1.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/php-enum.git",
-                "reference": "ae3fb27dbc8bebb7ad678e5d9131d84e6eb456d2"
+                "reference": "a867478eae49c9f59ece437ae7f9506bfaa27483"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/ae3fb27dbc8bebb7ad678e5d9131d84e6eb456d2",
-                "reference": "ae3fb27dbc8bebb7ad678e5d9131d84e6eb456d2",
+                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/a867478eae49c9f59ece437ae7f9506bfaa27483",
+                "reference": "a867478eae49c9f59ece437ae7f9506bfaa27483",
                 "shasum": ""
             },
             "require": {
@@ -900,9 +900,8 @@
             "require-dev": {
                 "phpunit/phpunit": "^9.5",
                 "squizlabs/php_codesniffer": "1.*",
-                "vimeo/psalm": "^4.6.2 || ^5.2"
+                "vimeo/psalm": "^4.6.2"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -923,13 +922,13 @@
                 }
             ],
             "description": "PHP Enum implementation",
-            "homepage": "https://github.com/myclabs/php-enum",
+            "homepage": "http://github.com/myclabs/php-enum",
             "keywords": [
                 "enum"
             ],
             "support": {
                 "issues": "https://github.com/myclabs/php-enum/issues",
-                "source": "https://github.com/myclabs/php-enum/tree/master"
+                "source": "https://github.com/myclabs/php-enum/tree/1.8.4"
             },
             "funding": [
                 {
@@ -941,7 +940,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-13T17:39:16+00:00"
+            "time": "2022-08-04T09:53:51+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -4574,25 +4573,24 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.0.x-dev",
+            "version": "1.12.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "b3cd81524ff12abf3a2bd1c0bf092c699d3dddff"
+                "reference": "dc2b9976bd8b0f84ec9b0e50cc35378551de7af0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b3cd81524ff12abf3a2bd1c0bf092c699d3dddff",
-                "reference": "b3cd81524ff12abf3a2bd1c0bf092c699d3dddff",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/dc2b9976bd8b0f84ec9b0e50cc35378551de7af0",
+                "reference": "dc2b9976bd8b0f84ec9b0e50cc35378551de7af0",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4|^8.0"
+                "php": "^7.2|^8.0"
             },
             "conflict": {
                 "phpstan/phpstan-shim": "*"
             },
-            "default-branch": true,
             "bin": [
                 "phpstan",
                 "phpstan.phar"
@@ -4629,7 +4627,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-10-13T11:45:42+00:00"
+            "time": "2024-10-18T11:12:07+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -7690,6 +7688,58 @@
             "time": "2024-03-03T12:36:25+00:00"
         },
         {
+            "name": "timeweb/phpstan-enum",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/timeweb/phpstan-enum.git",
+                "reference": "72f54c981431039ee194ffdf46e8340fea49195a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/timeweb/phpstan-enum/zipball/72f54c981431039ee194ffdf46e8340fea49195a",
+                "reference": "72f54c981431039ee194ffdf46e8340fea49195a",
+                "shasum": ""
+            },
+            "require": {
+                "myclabs/php-enum": "^1.2",
+                "php": "^7.1|^8.0",
+                "phpstan/phpstan": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.0|^9.0"
+            },
+            "default-branch": true,
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon",
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Timeweb\\PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Enum class reflection extension for PHPStan",
+            "keywords": [
+                "PHPStan",
+                "enum"
+            ],
+            "support": {
+                "issues": "https://github.com/timeweb/phpstan-enum/issues",
+                "source": "https://github.com/timeweb/phpstan-enum/tree/v3.1.1"
+            },
+            "time": "2022-10-17T05:55:05+00:00"
+        },
+        {
             "name": "yiisoft/yii2-debug",
             "version": "2.1.25",
             "source": {
@@ -7957,8 +8007,7 @@
         "atellitech/utils-yii2": 20,
         "doctrine/annotations": 20,
         "flow-php/etl-adapter-csv": 20,
-        "friendsofphp/php-cs-fixer": 20,
-        "phpstan/phpstan": 20
+        "friendsofphp/php-cs-fixer": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

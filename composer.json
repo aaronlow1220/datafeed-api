@@ -23,7 +23,7 @@
         "doctrine/annotations": "2.0.x-dev",
         "flow-php/etl": "^0.10.0",
         "flow-php/etl-adapter-csv": "1.x-dev",
-        "myclabs/php-enum": "dev-master"
+        "myclabs/php-enum": "^1.8"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
@@ -37,7 +37,8 @@
         "codeception/verify": "^3.0 || ^2.2",
         "symfony/browser-kit": "^6.0 || >=2.7 <=4.2.4",
         "friendsofphp/php-cs-fixer": "dev-master",
-        "phpstan/phpstan": "2.0.x-dev"
+        "phpstan/phpstan": "1.12.7",
+        "timeweb/phpstan-enum": "dev-master"
     },
     "config": {
         "allow-plugins": {
