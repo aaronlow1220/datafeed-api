@@ -178,33 +178,34 @@ class DatafeedService
             $clientInfo = json_decode($client['data'], true);
 
             $select = [
-                'datafeedid',
-                'availability',
-                'condition',
-                'description',
-                'image_link',
-                'link',
-                'title',
-                'price',
-                'sale_price',
-                'gtin',
-                'mpn',
-                'brand',
-                'google_product_category',
-                'item_group_id',
-                'custom_label_0',
-                'custom_label_1',
-                'custom_label_2',
-                'custom_label_3',
-                'custom_label_4',
+                'datafeedid' => 'datafeedid',
+                'availability' => 'availability',
+                'condition' => 'condition',
+                'description' => 'description',
+                'image_link' => 'image_link',
+                'link' => 'link',
+                'title' => 'title',
+                'price' => 'price',
+                'sale_price' => 'sale_price',
+                'gtin' => 'gtin',
+                'mpn' => 'mpn',
+                'brand' => 'brand',
+                'google_product_category' => 'google_product_category',
+                'item_group_id' => 'item_group_id',
+                'custom_label_0' => 'custom_label_0',
+                'custom_label_1' => 'custom_label_1',
+                'custom_label_2' => 'custom_label_2',
+                'custom_label_3' => 'custom_label_3',
+                'custom_label_4' => 'custom_label_4',
             ];
 
             $processedData = [];
 
-            // Unset empty values from $client
+            // Unset empty values and non-existent keys in data from clientInfo and select
             foreach ($clientInfo as $key => $value) {
-                if ('' === $value) {
-                    unset($clientInfo[$key]);
+                if ('' === $value || !array_key_exists($value, $data[0])) {
+                    unset($clientInfo[$key], $select[$key]);
+                    // unset($select[$key]);
                 }
             }
 
