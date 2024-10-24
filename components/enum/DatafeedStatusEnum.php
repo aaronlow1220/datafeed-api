@@ -5,11 +5,11 @@ namespace app\components\enum;
 use MyCLabs\Enum\Enum;
 
 /**
- * Status enum of user.
+ * Status enum of datafeed.
  *
  * @extends Enum<Action::*>
  */
-final class UserStatusEnum extends Enum
+final class DatafeedStatusEnum extends Enum
 {
     /**
      * @var string

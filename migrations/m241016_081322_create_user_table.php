@@ -29,7 +29,7 @@ class m241016_081322_create_user_table extends Migration
             'avatar' => $this->string(2048)->null()->comment('Avatar'),
             'last_login_ip' => $this->string(64)->null()->comment('Last login IP address'),
             'last_login_at' => $this->integer(10)->unsigned()->null()->comment('Last login unixtime'),
-            'status' => 'ENUM("1", "2") NOT NULL DEFAULT "1" COMMENT "1: active 2:inactive, ref:taxonomies.value of type name[user_status]"',
+            'status' => 'ENUM("0", "1") NOT NULL DEFAULT "1" COMMENT "0:inactive 1: active, ref:taxonomies.value of type name[user_status]"',
             'created_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),
             'created_at' => $this->integer(10)->unsigned()->notNull()->comment('unixtime'),
             'updated_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),

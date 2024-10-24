@@ -2,6 +2,7 @@
 
 namespace v1\controllers;
 
+use InvalidArgumentException;
 use Throwable;
 use Yii;
 use app\components\client\ClientRepo;
@@ -9,7 +10,9 @@ use app\components\core\FileRepo;
 use app\components\datafeed\DatafeedService;
 use app\components\platform\PlatformRepo;
 use v1\components\ActiveApiController;
+use v1\components\datafeed\DatafeedSearchService;
 use yii\base\Module;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
 
@@ -40,7 +43,7 @@ use yii\web\HttpException;
  *     @OA\Parameter(
  *         name="expand",
  *         in="query",
- *         @OA\Schema(type="string", enum={"xxxx"}, description="Query related models, using comma(,) be seperator")
+ *         @OA\Schema(ref="#/components/schemas/DatafeedSearch/properties/expand")
  *     ),
  *     @OA\Response(
  *         response=200,
@@ -116,10 +119,11 @@ class DatafeedController extends ActiveApiController
      * @param ClientRepo $clientRepo
      * @param PlatformRepo $platformRepo
      * @param FileRepo $fileRepo
+     * @param DatafeedSearchService $datafeedSearchService
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, private FileRepo $fileRepo, $config = [])
+    public function __construct($id, $module, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, private FileRepo $fileRepo, private DatafeedSearchService $datafeedSearchService, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -204,6 +208,51 @@ class DatafeedController extends ActiveApiController
             return $this->fileRepo->create($data);
         } catch (Throwable $e) {
             throw new HttpException(400, 'Export datafeed failed');
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/datafeed/search",
+     *     summary="Search",
+     *     description="Search Datafeed by particular params",
+     *     operationId="searchDatafeed",
+     *     tags={"Datafeed"},
+     *     @OA\RequestBody(
+     *         description="search Datafeed",
+     *         required=false,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(ref="#/components/schemas/DatafeedSearch")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *              @OA\Property(property="_data", type="array", @OA\Items(ref="#/components/schemas/Datafeed")),
+     *              @OA\Property(property="_meta", type="object", ref="#/components/schemas/Pagination")
+     *             )
+     *         )
+     *     )
+     * )
+     *
+     * Search Datafeed
+     *
+     * @return ActiveDataProvider
+     */
+    public function actionSearch(): ActiveDataProvider
+    {
+        try {
+            $params = $this->getRequestParams();
+
+            return $this->datafeedSearchService->createDataProvider($params);
+        } catch (InvalidArgumentException $e) {
+            throw new HttpException(400, $e->getMessage());
+        } catch (Throwable $e) {
+            throw $e;
         }
     }
 }

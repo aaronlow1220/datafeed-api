@@ -5,6 +5,7 @@ namespace app\models;
 use yii\behaviors\AttributeTypecastBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -44,6 +45,8 @@ use yii\db\ActiveRecord;
  */
 class Datafeed extends ActiveRecord
 {
+    use TaxonomyTrait;
+
     /**
      * Return table name of datafeed.
      *
@@ -112,6 +115,16 @@ class Datafeed extends ActiveRecord
      */
     public function extraFields()
     {
-        return ['item_group'];
+        return ['statusLabel'];
+    }
+
+    /**
+     * Get status label.
+     *
+     * @return ActiveQuery
+     */
+    public function getStatusLabel(): ActiveQuery
+    {
+        return $this->getTaxonomy('datafeed_status', 'status');
     }
 }
