@@ -47,17 +47,6 @@ return [
             'GET <a:(export)>/<id:\d+>/<platformid:\d+>' => '<a>',
         ],
     ],
-    [ // Transformer
-        'class' => 'yii\rest\UrlRule',
-        'controller' => [
-            'transformer' => 'v1/transformer',
-        ],
-        'extraPatterns' => [
-            'OPTIONS <a:(search)>' => 'options',
-            'POST <a:(search)>' => '<a>',
-            'GET <a:(transform)>/<client>/<platform>' => '<a>',
-        ],
-    ],
     [ // File
         'class' => 'yii\rest\UrlRule',
         'controller' => [

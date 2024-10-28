@@ -126,12 +126,16 @@ class FileController extends ActiveApiController
      */
     public function actionFeed(string $filename): Response
     {
-        $file = $this->fileRepo->findOne(['filename' => $filename.'.csv']);
+        try {
+            $file = $this->fileRepo->findOne(['filename' => $filename.'.csv']);
 
-        if (file_exists($file['path'])) {
+            if (!file_exists($file['path'])) {
+                throw new HttpException(400, 'File not found');
+            }
+
             return Yii::$app->response->sendFile($file['path']);
+        } catch (Throwable $e) {
+            throw new HttpException(400, $e->getMessage());
         }
-
-        throw new HttpException(404, 'File not found');
     }
 }
