@@ -53,10 +53,9 @@ return [
             'file' => 'v1/file',
         ],
         'extraPatterns' => [
-            'OPTIONS <a:(upload)>/<id:\d+>' => 'options',
-            'OPTIONS <a:(feed)>/<filename>' => 'options',
+            'OPTIONS <a:(upload|feed)>/<id:\d+>' => 'options',
             'POST <a:(upload)>/<id:\d+>' => '<a>',
-            'GET <a:(feed)>/<filename>' => '<a>',
+            'GET <a:(feed)>/<d:\d+>' => '<a>',
         ],
     ],
 ];

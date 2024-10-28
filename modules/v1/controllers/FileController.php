@@ -120,14 +120,14 @@ class FileController extends ActiveApiController
     /**
      * Feed a file.
      *
-     * @param string $filename
+     * @param int $id
      *
      * @return Response
      */
-    public function actionFeed(string $filename): Response
+    public function actionFeed(int $id): Response
     {
         try {
-            $file = $this->fileRepo->findOne(['filename' => $filename.'.csv']);
+            $file = $this->fileRepo->findOne($id);
 
             if (!file_exists($file['path'])) {
                 throw new HttpException(400, 'File not found');
