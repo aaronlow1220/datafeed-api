@@ -45,11 +45,6 @@ class FileSearchService
             ]);
         }
 
-        // filter by status values
-        if ($searchModel->statusValues) {
-            $query->andFilterWhere(['status' => $searchModel->statusValues]);
-        }
-
         $dataProvider = new ActiveDataProvider([
             'query' => &$query,
             'pagination' => [
