@@ -239,39 +239,43 @@ class DatafeedService
      */
     public function export(ActiveRecord $platform, ActiveRecord $client, string $resultPath, array $filter): string
     {
-        $data = [];
-        $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter)->all();
+        try {
+            $data = [];
+            $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter)->all();
 
-        foreach ($datafeeds as $datafeed) {
-            $data[] = $datafeed['attributes'];
-        }
-
-        if (!$data) {
-            throw new Exception('Datafeed not found', 400);
-        }
-
-        $platformInfo = json_decode($platform['data'], true);
-
-        foreach ($platform as $key => $value) {
-            if ('' === $value) {
-                unset($platform[$key]);
+            foreach ($datafeeds as $datafeed) {
+                $data[] = $datafeed['attributes'];
             }
+
+            if (!$data) {
+                throw new Exception('Datafeed not found', 400);
+            }
+
+            $platformInfo = json_decode($platform['data'], true);
+
+            foreach ($platform as $key => $value) {
+                if ('' === $value) {
+                    unset($platform[$key]);
+                }
+            }
+
+            $etl = data_frame()
+                ->read(from_array($data));
+
+            // Select only the columns that are required by the platform
+            $etl->select(...array_keys($platformInfo));
+
+            foreach ($platformInfo as $key => $value) {
+                $etl->rename($key, $value);
+            }
+
+            // Load to CSV
+            $etl->load(to_csv($resultPath))->run();
+
+            return $resultPath;
+        } catch (Throwable $e) {
+            throw $e;
         }
-
-        $etl = data_frame()
-            ->read(from_array($data));
-
-        // Select only the columns that are required by the platform
-        $etl->select(...array_keys($platformInfo));
-
-        foreach ($platformInfo as $key => $value) {
-            $etl->rename($key, $value);
-        }
-
-        // Load to CSV
-        $etl->load(to_csv($resultPath))->run();
-
-        return $resultPath;
     }
 
     /**

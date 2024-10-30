@@ -207,7 +207,7 @@ class DatafeedController extends ActiveApiController
 
             return $this->fileRepo->create($data);
         } catch (Throwable $e) {
-            throw new HttpException(400, $e->getMessage());
+            throw $e;
         }
     }
 
