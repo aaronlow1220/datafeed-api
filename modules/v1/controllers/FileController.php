@@ -3,6 +3,8 @@
 namespace v1\controllers;
 
 use Throwable;
+use v1\components\file\FileSearchService;
+use InvalidArgumentException;
 use Yii;
 use app\components\FileEntity;
 use app\components\client\ClientRepo;
@@ -15,6 +17,7 @@ use yii\db\ActiveRecord;
 use yii\web\HttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
+use yii\data\ActiveDataProvider;
 
 /**
  * @OA\Tag(
@@ -39,11 +42,6 @@ use yii\web\UploadedFile;
  *         name="fields",
  *         in="query",
  *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/fields")
- *     ),
- *     @OA\Parameter(
- *         name="expand",
- *         in="query",
- *         @OA\Schema(type="string", enum={"xxxx"}, description="Query related models, using comma(,) be seperator")
  *     ),
  *     @OA\Response(
  *         response=200,
@@ -73,7 +71,7 @@ class FileController extends ActiveApiController
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private FileRepo $fileRepo, private FileService $fileService, private DatafeedService $datafeedService, private ClientRepo $clientRepo, $config = [])
+    public function __construct($id, $module, private FileRepo $fileRepo, private FileService $fileService, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private FileSearchService $fileSearchService, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -198,6 +196,51 @@ class FileController extends ActiveApiController
             }
 
             return Yii::$app->response->sendFile($file['path']);
+        } catch (Throwable $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/file/search",
+     *     summary="Search",
+     *     description="Search File by particular params",
+     *     operationId="searchFile",
+     *     tags={"File"},
+     *     @OA\RequestBody(
+     *         description="search File",
+     *         required=false,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(ref="#/components/schemas/FileSearch")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *              @OA\Property(property="_data", type="array", @OA\Items(ref="#/components/schemas/File")),
+     *              @OA\Property(property="_meta", type="object", ref="#/components/schemas/Pagination")
+     *             )
+     *         )
+     *     )
+     * )
+     *
+     * Search DataVersion
+     *
+     * @return ActiveDataProvider
+     */
+    public function actionSearch(): ActiveDataProvider
+    {
+        try {
+            $params = $this->getRequestParams();
+
+            return $this->fileSearchService->createDataProvider($params);
+        } catch (InvalidArgumentException $e) {
+            throw new HttpException(400, $e->getMessage());
         } catch (Throwable $e) {
             throw $e;
         }
