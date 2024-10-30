@@ -11,6 +11,7 @@ use app\components\core\FileService;
 use app\components\datafeed\DatafeedService;
 use v1\components\ActiveApiController;
 use yii\base\Module;
+use yii\db\ActiveRecord;
 use yii\web\HttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
@@ -98,30 +99,93 @@ class FileController extends ActiveApiController
      *
      * @return array<int, mixed>
      */
-    public function actionUpload(int $id): array
+    /**
+     * @OA\Post(
+     *    path="/file/upload/{id}",
+     *    summary="Upload",
+     *    description="Upload a file",
+     *    operationId="uploadFile",
+     *    tags={"File"},
+     *    @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Client id",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/Client/properties/id")
+     *    ),
+     *    @OA\RequestBody(
+     *        description="Upload a file",
+     *        required=true,
+     *        @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *                 required={"file"},
+     *                 @OA\Property(property="file", type="string", format="binary", description="File to upload"),
+     *            )
+     *       ),
+     *       @OA\MediaType(
+     *            mediaType="application/json",
+     *            @OA\Schema(
+     *                 required={"url"},
+     *                 @OA\Property(property="url", type="string", description="File to upload"),
+     *            )
+     *       ),
+     *    ),
+     *    @OA\Response(
+     *       response=200,
+     *       description="Successful operation",
+     *       @OA\JsonContent(type="object", ref="#/components/schemas/File")
+     *    )
+     * )
+     *
+     * @return ActiveRecord
+     */
+    public function actionUpload(int $id): ActiveRecord
     {
         $uploadFile = UploadedFile::getInstanceByName('file');
-        $file = FileEntity::createByUploadedFile($uploadFile);
-        $client = $this->clientRepo->findOne($id);
-
-        if (!$client) {
-            throw new HttpException(404, 'Client not found');
-        }
+        $params = $this->getRequestParams();
 
         try {
-            $upload = $this->fileService->upload($file);
+            if (isset($params['url'])) {
+                $uploadFile = $this->fileService->loadFileToUploadedFile($params['url']);
+            }
+            $file = FileEntity::createByUploadedFile($uploadFile);
 
-            return $this->datafeedService->createFromFile($client, $upload['path']);
+            $client = $this->clientRepo->findOne($id);
+            $upload = $this->fileService->upload($file);
+            $this->datafeedService->createFromFile($client, $upload['path']);
+
+            return $upload;
         } catch (Throwable $e) {
             throw $e;
         }
     }
 
     /**
-     * Feed a file.
+     * @OA\Get(
+     *     path="/file/feed/{id}}",
+     *     summary="Download",
+     *     description="Download File by particular id",
+     *     operationId="downloadFile",
+     *     tags={"File"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="File id",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/File/properties/id")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\MediaType(
+     *             mediaType="application/octet-stream",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     )
+     * )
      *
      * @param int $id
-     *
      * @return Response
      */
     public function actionFeed(int $id): Response
@@ -135,7 +199,7 @@ class FileController extends ActiveApiController
 
             return Yii::$app->response->sendFile($file['path']);
         } catch (Throwable $e) {
-            throw new HttpException(400, $e->getMessage());
+            throw $e;
         }
     }
 }

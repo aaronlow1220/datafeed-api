@@ -5,6 +5,7 @@ namespace app\components\core;
 use Exception;
 use app\components\FileEntity;
 use yii\db\ActiveRecord;
+use yii\web\UploadedFile;
 
 /**
  * This service is used to handle specific business logic for File.
@@ -60,5 +61,41 @@ final class FileService
 
             throw new Exception('Create file record, failed', 500, $e);
         }
+    }
+
+    /**
+     * Load url filefeed to UploadedFile.
+     *
+     * @param string $url
+     * @return UploadedFile
+     */
+    public function loadFileToUploadedFile($url)
+    {
+        $fileContent = file_get_contents($url);
+
+        if (false === $fileContent) {
+            throw new Exception("Could not read file from {$url}");
+        }
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'upload');
+        file_put_contents($tempFilePath, $fileContent);
+
+        $mimeToExt = [
+            'text/csv' => 'csv',
+            'text/xml' => 'xml',
+            'text/plain' => 'txt',
+        ];
+
+        $extension = $mimeToExt[mime_content_type($tempFilePath)] ?? 'txt';
+
+        $uploadedFile = new UploadedFile();
+        $uploadedFile->name = basename($url).'.'.$extension;
+        $uploadedFile->tempName = $tempFilePath;
+        $uploadedFile->type = mime_content_type($tempFilePath);
+        $uploadedFile->size = filesize($tempFilePath);
+        $uploadedFile->error = UPLOAD_ERR_OK;
+        $uploadedFile->fullPath = basename($url).'.'.$extension;
+
+        return $uploadedFile;
     }
 }
