@@ -2,9 +2,8 @@
 
 namespace v1\controllers;
 
-use Throwable;
-use v1\components\file\FileSearchService;
 use InvalidArgumentException;
+use Throwable;
 use Yii;
 use app\components\FileEntity;
 use app\components\client\ClientRepo;
@@ -12,12 +11,13 @@ use app\components\core\FileRepo;
 use app\components\core\FileService;
 use app\components\datafeed\DatafeedService;
 use v1\components\ActiveApiController;
+use v1\components\file\FileSearchService;
 use yii\base\Module;
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
-use yii\data\ActiveDataProvider;
 
 /**
  * @OA\Tag(
@@ -68,6 +68,7 @@ class FileController extends ActiveApiController
      * @param FileService $fileService
      * @param DatafeedService $datafeedService
      * @param ClientRepo $clientRepo
+     * @param FileSearchService $fileSearchService
      * @param array<string, mixed> $config
      * @return void
      */
