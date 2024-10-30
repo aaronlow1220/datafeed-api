@@ -37,7 +37,7 @@ use yii\web\HttpException;
  *     @OA\Parameter(
  *         name="expand",
  *         in="query",
- *         @OA\Schema(type="string", enum={"xxxx"}, description="Query related models, using comma(,) be seperator")
+ *         @OA\Schema(ref="#/components/schemas/DataVersionSearch/properties/expand")
  *     ),
  *     @OA\Response(
  *         response=200,
