@@ -178,8 +178,8 @@ class DatafeedController extends ActiveApiController
      */
     public function actionExport(int $id, string $platformid): ActiveRecord
     {
+        $resultPath = __DIR__.'/../../../runtime/files/result';
         $params = Yii::$app->request->get();
-        unset($params['id'], $params['platformid']);
 
         try {
             $client = $this->clientRepo->findOne(['id' => $id]);
@@ -193,7 +193,7 @@ class DatafeedController extends ActiveApiController
                 throw new HttpException(400, 'Platform not found');
             }
 
-            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', __DIR__.'/../../../runtime/files/result', uniqid(), $client['name'], $platform['name']);
+            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $resultPath, uniqid(), $client['name'], $platform['name']);
 
             $this->datafeedService->export($platform, $client, $resultPath, $params);
 

@@ -56,10 +56,8 @@ class DatafeedService
                 $newDatafeedIds[] = $datafeedId;
 
                 if (isset($existingDatafeeds[$datafeedId])) {
-                    // Update existing datafeed
                     $this->datafeedRepo->update($existingDatafeeds[$datafeedId]['id'], $value);
                 } else {
-                    // Create new datafeed
                     $this->datafeedRepo->create($value);
                 }
             }
@@ -239,8 +237,10 @@ class DatafeedService
      */
     public function export(ActiveRecord $platform, ActiveRecord $client, string $resultPath, array $filter): string
     {
+        $data = [];
+        unset($filter['id'], $filter['platformid']);
+
         try {
-            $data = [];
             $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter)->all();
 
             foreach ($datafeeds as $datafeed) {
