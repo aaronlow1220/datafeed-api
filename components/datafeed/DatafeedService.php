@@ -96,7 +96,7 @@ class DatafeedService
                     'filename' => basename($filePath),
                     'hash' => hash_file('md5', $filePath),
                     'client_id' => $client['id'],
-                    'version' => 1,
+                    'version' => 0,
                 ];
                 $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
             }
@@ -105,7 +105,7 @@ class DatafeedService
 
             $finalDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
 
-            if ($initialDataVersion['hash'] !== $finalDataVersion['hash']) {
+            if ($initialDataVersion['version'] !== $finalDataVersion['version']) {
                 throw new Exception('Data version not match', 400);
             }
 
