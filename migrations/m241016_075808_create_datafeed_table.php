@@ -39,7 +39,7 @@ class m241016_075808_create_datafeed_table extends Migration
             'custom_label_2' => $this->string(255)->comment('Custom label 2'),
             'custom_label_3' => $this->string(255)->comment('Custom label 3'),
             'custom_label_4' => $this->string(255)->comment('Custom label 4'),
-            'status' => 'ENUM("0", "1") NOT NULL DEFAULT "1" COMMENT "0:inactive 1: active, ref:taxonomies.value of type name[datafeed_status]"',
+            'status' => 'ENUM("0", "1") NOT NULL DEFAULT "1" COMMENT "0:inactive 1:active, ref:taxonomies.value of type name[datafeed_status]"',
             'created_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),
             'created_at' => $this->integer(10)->unsigned()->notNull()->comment('unixtime'),
             'updated_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),
