@@ -3,23 +3,23 @@
 namespace v1\components\datafeed;
 
 use InvalidArgumentException;
-use app\components\datafeed\DatafeedRepo;
-use v1\models\validator\DatafeedSearch;
+use app\components\datafeed\FeedFileRepo;
+use v1\models\validator\FeedFileSearch;
 use yii\data\ActiveDataProvider;
 
 /**
- * Datafeed search service.
+ * FeedFile search service.
  *
  * @author Aaron Low <aaron.low@atelli.ai>
  */
-class DatafeedSearchService
+class FeedFileSearchService
 {
     /**
      * constructor.
      *
-     * @param DatafeedRepo $datafeedRepo
+     * @param FeedFileRepo $feedFileRepo
      */
-    public function __construct(private DatafeedRepo $datafeedRepo) {}
+    public function __construct(private FeedFileRepo $feedFileRepo) {}
 
     /**
      * create search data provider.
@@ -29,20 +29,19 @@ class DatafeedSearchService
      */
     public function createDataProvider(array $params): ActiveDataProvider
     {
-        $searchModel = new DatafeedSearch($params);
+        $searchModel = new FeedFileSearch($params);
         if (!$searchModel->validate()) {
             throw new InvalidArgumentException(implode(' ', $searchModel->getErrorSummary(true)));
         }
 
         // create query
-        $query = $this->datafeedRepo->find();
+        $query = $this->feedFileRepo->find();
 
         // filter by keyword
         if ($searchModel->keyword) {
             $query->andFilterWhere([
                 'or',
-                ['like', 'title', $searchModel->keyword],
-                ['like', 'description', $searchModel->keyword],
+                ['like', 'utm', $searchModel->keyword],
             ]);
         }
 

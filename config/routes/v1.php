@@ -58,4 +58,14 @@ return [
             'GET <a:(feed)>/<id:\d+>' => '<a>',
         ],
     ],
+    [ // FeedFile
+        'class' => 'yii\rest\UrlRule',
+        'controller' => [
+            'feed-file' => 'v1/feed-file',
+        ],
+        'extraPatterns' => [
+            'OPTIONS <a:(search)>' => 'options',
+            'POST <a:(search)>' => '<a>',
+        ],
+    ],
 ];
