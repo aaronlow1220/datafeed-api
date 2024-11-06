@@ -4,16 +4,64 @@ namespace v1\controllers;
 
 use InvalidArgumentException;
 use Throwable;
+use Yii;
+use app\components\core\FileRepo;
+use app\components\datafeed\FeedFileRepo;
 use app\modules\v1\Module;
 use v1\components\ActiveApiController;
 use v1\components\datafeed\FeedFileSearchService;
 use yii\data\ActiveDataProvider;
 use yii\web\HttpException;
+use yii\web\Response;
 
 /**
  * @OA\Tag(
  *     name="FeedFile",
  *     description="Everything about your FeedFile",
+ * )
+ *
+ * @OA\Get(
+ *     path="/feed-file",
+ *     summary="List",
+ *     description="List all FeedFile",
+ *     operationId="listFeedFile",
+ *     tags={"FeedFile"},
+ *     @OA\Parameter(
+ *         name="page",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/page")
+ *     ),
+ *     @OA\Parameter(
+ *         name="pageSize",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/pageSize")
+ *     ),
+ *     @OA\Parameter(
+ *         name="sort",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/sort")
+ *     ),
+ *     @OA\Parameter(
+ *         name="fields",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/StandardParams/properties/fields")
+ *     ),
+ *     @OA\Parameter(
+ *         name="expand",
+ *         in="query",
+ *         @OA\Schema(ref="#/components/schemas/FeedFileSearch/properties/expand")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Successful operation",
+ *         @OA\MediaType(
+ *             mediaType="application/json",
+ *             @OA\Schema(
+ *              @OA\Property(property="_data", type="array", @OA\Items(ref="#/components/schemas/FeedFile")),
+ *              @OA\Property(property="_meta", type="object", ref="#/components/schemas/Pagination")
+ *             )
+ *         )
+ *     )
  * )
  *
  * @OA\Get(
@@ -124,9 +172,11 @@ class FeedFileController extends ActiveApiController
      * @param string $id
      * @param Module $module
      * @param FeedFileSearchService $feedFileSearchService
+     * @param FeedFileRepo $feedFileRepo
+     * @param FileRepo $fileRepo
      * @param array<string, mixed> $config
      */
-    public function __construct($id, $module, private FeedFileSearchService $feedFileSearchService, $config = [])
+    public function __construct($id, $module, private FeedFileSearchService $feedFileSearchService, private FeedFileRepo $feedFileRepo, private FileRepo $fileRepo, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -138,11 +188,50 @@ class FeedFileController extends ActiveApiController
      */
     public function actions()
     {
-        $actions = parent::actions();
+        return parent::actions();
+    }
 
-        unset($actions['index']);
+    /**
+     * @OA\Get(
+     *     path="/feed-file/feed/{id}",
+     *     summary="Download",
+     *     description="Download File by particular id",
+     *     operationId="downloadFile",
+     *     tags={"FeedFile"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="FeedFile id",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/FeedFile/properties/id")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\MediaType(
+     *             mediaType="application/octet-stream",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     )
+     * )
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function actionFeed(int $id): Response
+    {
+        try {
+            $feedFile = $this->feedFileRepo->findOne($id);
+            $file = $this->fileRepo->findOne($feedFile['file_id']);
 
-        return $actions;
+            if (!file_exists($file['path'])) {
+                throw new HttpException(400, 'File not found');
+            }
+
+            return Yii::$app->response->sendFile($file['path']);
+        } catch (Throwable $e) {
+            throw $e;
+        }
     }
 
     /**

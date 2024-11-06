@@ -54,8 +54,9 @@ return [
         ],
         'extraPatterns' => [
             'OPTIONS <a:(upload|feed)>/<id:\d+>' => 'options',
+            'OPTIONS <a:(search)>' => 'options',
             'POST <a:(upload)>/<id:\d+>' => '<a>',
-            'GET <a:(feed)>/<id:\d+>' => '<a>',
+            'POST <a:(search)>' => '<a>',
         ],
     ],
     [ // FeedFile
@@ -64,8 +65,10 @@ return [
             'feed-file' => 'v1/feed-file',
         ],
         'extraPatterns' => [
+            'OPTIONS <a:(feed)>/<id:\d+>' => 'options',
             'OPTIONS <a:(search)>' => 'options',
             'POST <a:(search)>' => '<a>',
+            'GET <a:(feed)>/<id:\d+>' => '<a>',
         ],
     ],
 ];

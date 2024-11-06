@@ -4,10 +4,8 @@ namespace v1\controllers;
 
 use InvalidArgumentException;
 use Throwable;
-use Yii;
 use app\components\FileEntity;
 use app\components\client\ClientRepo;
-use app\components\core\FileRepo;
 use app\components\core\FileService;
 use app\components\datafeed\DatafeedService;
 use v1\components\ActiveApiController;
@@ -64,7 +62,6 @@ class FileController extends ActiveApiController
      *
      * @param string $id
      * @param Module $module
-     * @param FileRepo $fileRepo
      * @param FileService $fileService
      * @param DatafeedService $datafeedService
      * @param ClientRepo $clientRepo
@@ -72,7 +69,7 @@ class FileController extends ActiveApiController
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private FileRepo $fileRepo, private FileService $fileService, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private FileSearchService $fileSearchService, $config = [])
+    public function __construct($id, $module, private FileService $fileService, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private FileSearchService $fileSearchService, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -155,48 +152,6 @@ class FileController extends ActiveApiController
             $this->datafeedService->createFromFile($client, $upload['path']);
 
             return $upload;
-        } catch (Throwable $e) {
-            throw $e;
-        }
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/file/feed/{id}}",
-     *     summary="Download",
-     *     description="Download File by particular id",
-     *     operationId="downloadFile",
-     *     tags={"File"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="File id",
-     *         required=true,
-     *         @OA\Schema(ref="#/components/schemas/File/properties/id")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\MediaType(
-     *             mediaType="application/octet-stream",
-     *             @OA\Schema(type="string", format="binary")
-     *         )
-     *     )
-     * )
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function actionFeed(int $id): Response
-    {
-        try {
-            $file = $this->fileRepo->findOne($id);
-
-            if (!file_exists($file['path'])) {
-                throw new HttpException(400, 'File not found');
-            }
-
-            return Yii::$app->response->sendFile($file['path']);
         } catch (Throwable $e) {
             throw $e;
         }

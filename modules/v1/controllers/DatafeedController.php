@@ -182,17 +182,16 @@ class DatafeedController extends ActiveApiController
     {
         $resultPath = __DIR__.'/../../../runtime/files/result';
         $params = Yii::$app->request->get();
-        $utm = $params['utm_param'] ?? null;
-        unset($params['id'], $params['platformid'], $params['utm_param']);
-        $filter = json_encode($params);
+        unset($params['id'], $params['platformid']);
+        $filter = empty(json_encode($params)) ? '{}' : json_encode($params, JSON_UNESCAPED_UNICODE);
 
         try {
             $client = $this->clientRepo->findOne(['id' => $id]);
             $platform = $this->platformRepo->findOne(['id' => $platformid]);
-            $feedFile = $this->feedFileRepo->findOne(['client_id' => $id, 'platform_id' => $platformid]);
+            $feedFile = $this->feedFileRepo->findOne(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter]);
 
             if (!$feedFile) {
-                $feedFile = $this->feedFileRepo->create(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter, 'utm' => $utm]);
+                $feedFile = $this->feedFileRepo->create(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter]);
             }
 
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $resultPath, uniqid(), $client['name'], $platform['name']);
