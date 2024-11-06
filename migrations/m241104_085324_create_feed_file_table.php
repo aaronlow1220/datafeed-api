@@ -10,7 +10,7 @@ class m241104_085324_create_feed_file_table extends Migration
     /**
      * @var string
      */
-    public $table = 'file';
+    public $table = 'feed_file';
 
     /**
      * {@inheritdoc}

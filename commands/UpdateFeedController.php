@@ -19,4 +19,16 @@ class UpdateFeedController extends Controller
 
         return ExitCode::OK;
     }
+
+    /**
+     * This command updates feed.
+     *
+     * @return int Exit code
+     */
+    public function actionUpdate()
+    {
+        echo "Updating feed...\n";
+
+        return ExitCode::OK;
+    }
 }
