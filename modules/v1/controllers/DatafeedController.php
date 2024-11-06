@@ -8,6 +8,7 @@ use Yii;
 use app\components\client\ClientRepo;
 use app\components\core\FileRepo;
 use app\components\datafeed\DatafeedService;
+use app\components\datafeed\FeedFileRepo;
 use app\components\platform\PlatformRepo;
 use v1\components\ActiveApiController;
 use v1\components\datafeed\DatafeedSearchService;
@@ -119,11 +120,12 @@ class DatafeedController extends ActiveApiController
      * @param ClientRepo $clientRepo
      * @param PlatformRepo $platformRepo
      * @param FileRepo $fileRepo
+     * @param FeedFileRepo $feedFileRepo
      * @param DatafeedSearchService $datafeedSearchService
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, private FileRepo $fileRepo, private DatafeedSearchService $datafeedSearchService, $config = [])
+    public function __construct($id, $module, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private PlatformRepo $platformRepo, private FileRepo $fileRepo, private FeedFileRepo $feedFileRepo, private DatafeedSearchService $datafeedSearchService, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -143,7 +145,7 @@ class DatafeedController extends ActiveApiController
     }
 
     /**
-     * @OA\Post(
+     * @OA\Get(
      *     path="/datafeed/export/{id}/{platformid}",
      *     summary="Export",
      *     description="Export a record of Datafeed",
@@ -180,22 +182,22 @@ class DatafeedController extends ActiveApiController
     {
         $resultPath = __DIR__.'/../../../runtime/files/result';
         $params = Yii::$app->request->get();
+        $utm = $params['utm_param'] ?? null;
+        unset($params['id'], $params['platformid'], $params['utm_param']);
+        $filter = json_encode($params);
 
         try {
             $client = $this->clientRepo->findOne(['id' => $id]);
             $platform = $this->platformRepo->findOne(['id' => $platformid]);
+            $feedFile = $this->feedFileRepo->findOne(['client_id' => $id, 'platform_id' => $platformid]);
 
-            if (!$client) {
-                throw new HttpException(400, 'Client not found');
-            }
-
-            if (!$platform) {
-                throw new HttpException(400, 'Platform not found');
+            if (!$feedFile) {
+                $feedFile = $this->feedFileRepo->create(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter, 'utm' => $utm]);
             }
 
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $resultPath, uniqid(), $client['name'], $platform['name']);
 
-            $this->datafeedService->export($platform, $client, $resultPath, $params);
+            $this->datafeedService->export($platform, $client, $feedFile, $resultPath);
 
             $data = [
                 'mime' => 'text/csv',
@@ -205,7 +207,15 @@ class DatafeedController extends ActiveApiController
                 'size' => filesize($resultPath),
             ];
 
-            return $this->fileRepo->create($data);
+            $file = $this->fileRepo->create($data);
+
+            $feedFileParams = [
+                'file_id' => $file['id'],
+            ];
+
+            $feedFile = $this->feedFileRepo->update($feedFile, $feedFileParams);
+
+            return $file;
         } catch (Throwable $e) {
             throw $e;
         }

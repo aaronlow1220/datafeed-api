@@ -230,15 +230,15 @@ class DatafeedService
      *
      * @param ActiveRecord $platform
      * @param ActiveRecord $client
+     * @param ActiveRecord $feedFile
      * @param string $resultPath
-     * @param array<string, mixed> $filter
      *
      * @return string
      */
-    public function export(ActiveRecord $platform, ActiveRecord $client, string $resultPath, array $filter): string
+    public function export(ActiveRecord $platform, ActiveRecord $client, ActiveRecord $feedFile, string $resultPath): string
     {
         $data = [];
-        unset($filter['id'], $filter['platformid']);
+        $filter = json_decode($feedFile['filter'], true);
 
         try {
             $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter)->all();
@@ -253,17 +253,17 @@ class DatafeedService
 
             $platformInfo = json_decode($platform['data'], true);
 
-            foreach ($platform as $key => $value) {
+            foreach ($platformInfo as $key => $value) {
                 if ('' === $value) {
-                    unset($platform[$key]);
+                    unset($platformInfo[$key]);
                 }
             }
 
-            $etl = data_frame()
-                ->read(from_array($data));
+            $data = $this->addUtmParameters($data, $feedFile['utm']);
 
-            // Select only the columns that are required by the platform
-            $etl->select(...array_keys($platformInfo));
+            $etl = data_frame()
+                ->read(from_array($data))
+                ->select(...array_keys($platformInfo));
 
             foreach ($platformInfo as $key => $value) {
                 $etl->rename($key, $value);
@@ -361,6 +361,13 @@ class DatafeedService
         }
     }
 
+    /**
+     * Get file extension.
+     *
+     * @param string $filePath
+     *
+     * @return string
+     */
     public function getFileExtension(string $filePath): string
     {
         try {
@@ -374,5 +381,25 @@ class DatafeedService
         } catch (Throwable $e) {
             throw $e;
         }
+    }
+
+    /**
+     * Add UTM parameters to the link.
+     *
+     * @param array<int, mixed> $data
+     * @param string $utmParam
+     *
+     * @return array<int, mixed>
+     */
+    public function addUtmParameters(array $data, string $utmParam): array
+    {
+        foreach ($data as $key => $value) {
+            $linkParamConnector = strpos($data[$key]['link'], '?') ? '&' : '?';
+            if (!empty($data[$key]['link'])) {
+                $data[$key]['link'] = $value['link'].$linkParamConnector.$utmParam;
+            }
+        }
+
+        return $data;
     }
 }

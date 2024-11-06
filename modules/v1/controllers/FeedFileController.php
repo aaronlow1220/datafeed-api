@@ -58,17 +58,12 @@ use yii\web\HttpException;
  *         @OA\MediaType(
  *             mediaType="application/json",
  *             @OA\Schema(
- *                  @OA\Property(property="id", ref="#/components/schemas/FeedFile/properties/id"),
  *                  @OA\Property(property="client_id", ref="#/components/schemas/FeedFile/properties/client_id"),
  *                  @OA\Property(property="platform_id", ref="#/components/schemas/FeedFile/properties/platform_id"),
  *                  @OA\Property(property="file_id", ref="#/components/schemas/FeedFile/properties/file_id"),
  *                  @OA\Property(property="filter", ref="#/components/schemas/FeedFile/properties/filter"),
  *                  @OA\Property(property="utm", ref="#/components/schemas/FeedFile/properties/utm"),
  *                  @OA\Property(property="status", ref="#/components/schemas/FeedFile/properties/status"),
- *                  @OA\Property(property="created_by", ref="#/components/schemas/FeedFile/properties/created_by"),
- *                  @OA\Property(property="created_at", ref="#/components/schemas/FeedFile/properties/created_at"),
- *                  @OA\Property(property="updated_by", ref="#/components/schemas/FeedFile/properties/updated_by"),
- *                  @OA\Property(property="updated_at", ref="#/components/schemas/FeedFile/properties/updated_at")
  *             )
  *         ),
  *     ),
@@ -98,17 +93,12 @@ use yii\web\HttpException;
  *         @OA\MediaType(
  *             mediaType="application/json",
  *             @OA\Schema(
- *                  @OA\Property(property="id", ref="#/components/schemas/FeedFile/properties/id"),
  *                  @OA\Property(property="client_id", ref="#/components/schemas/FeedFile/properties/client_id"),
  *                  @OA\Property(property="platform_id", ref="#/components/schemas/FeedFile/properties/platform_id"),
  *                  @OA\Property(property="file_id", ref="#/components/schemas/FeedFile/properties/file_id"),
  *                  @OA\Property(property="filter", ref="#/components/schemas/FeedFile/properties/filter"),
  *                  @OA\Property(property="utm", ref="#/components/schemas/FeedFile/properties/utm"),
  *                  @OA\Property(property="status", ref="#/components/schemas/FeedFile/properties/status"),
- *                  @OA\Property(property="created_by", ref="#/components/schemas/FeedFile/properties/created_by"),
- *                  @OA\Property(property="created_at", ref="#/components/schemas/FeedFile/properties/created_at"),
- *                  @OA\Property(property="updated_by", ref="#/components/schemas/FeedFile/properties/updated_by"),
- *                  @OA\Property(property="updated_at", ref="#/components/schemas/FeedFile/properties/updated_at")
  *             )
  *         ),
  *     ),

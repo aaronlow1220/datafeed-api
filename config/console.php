@@ -65,14 +65,8 @@ $config = [
                 ['v1\components', '@v1/components'],
             ],
         ],
-        'test' => [
-            'class' => 'app\commands\TestController',
-            'db' => 'db',
-            'path' => '@app/models',
-            'namespace' => 'app\models',
-        ],
-        'rbac' => [
-            'class' => 'app\commands\RbacController',
+        'updatefeed' => [
+            'class' => 'app\commands\UpdateFeedController',
         ],
     ],
 ];
