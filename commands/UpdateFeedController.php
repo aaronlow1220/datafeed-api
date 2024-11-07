@@ -4,31 +4,48 @@ namespace app\commands;
 
 use yii\console\Controller;
 use yii\console\ExitCode;
+use yii\helpers\BaseConsole;
 
 class UpdateFeedController extends Controller
 {
-    /**
-     * This command echoes what you have entered as the message.
-     *
-     * @param string $message the message to be echoed
-     * @return int Exit code
-     */
-    public function actionIndex($message = 'hello world')
-    {
-        echo $message."\n";
+    public $message = "hello world";
 
-        return ExitCode::OK;
+    public function options($actionID)
+    {
+        return array_merge(parent::options($actionID), [
+            'message',
+        ]);
+    }
+
+    public function optionAliases()
+    {
+        return array_merge(parent::optionAliases(), [
+            'm' => 'message',
+        ]);
     }
 
     /**
-     * This command updates feed.
-     *
-     * @return int Exit code
+     * Summary of actionIndex
+     * 
+     * @param string $message
+     * @return void
+     */
+    public function actionIndex()
+    {
+        echo $this->message . "\n";
+
+        echo $this->ansiFormat("Success\n", BaseConsole::BG_GREEN);
+    }
+
+    /**
+     * Summary of actionUpdate
+     * 
+     * @return void
      */
     public function actionUpdate()
     {
-        echo "Updating feed...\n";
+        // echo "Updating feed...\n";
 
-        return ExitCode::OK;
+        echo $this->ansiFormat("Success\n", BaseConsole::BG_GREEN);
     }
 }
