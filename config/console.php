@@ -2,6 +2,7 @@
 
 $params = require __DIR__.'/params.php';
 $urlManager = require __DIR__.'/urlManager.php';
+$container = require __DIR__.'/container.php';
 
 $config = [
     'id' => 'datafeed-api-v1',
@@ -46,6 +47,7 @@ $config = [
         ],
     ],
     'params' => &$params,
+    'container' => &$container,
     'controllerMap' => [
         'genmodel' => [
             'class' => 'AtelliTech\Yii2\Utils\ModelGeneratorController',
