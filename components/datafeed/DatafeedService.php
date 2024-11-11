@@ -172,6 +172,8 @@ class DatafeedService
      */
     public function transform(array $data, ActiveRecord $client): array
     {
+        set_time_limit(180);
+
         try {
             $clientInfo = json_decode($client['data'], true);
 
@@ -259,7 +261,9 @@ class DatafeedService
                 }
             }
 
-            $data = $this->addUtmParameters($data, $feedFile['utm']);
+            if (!empty($feedFile['utm'])) {
+                $data = $this->addUtmParameters($data, $feedFile['utm']);
+            }
 
             $etl = data_frame()
                 ->read(from_array($data))
