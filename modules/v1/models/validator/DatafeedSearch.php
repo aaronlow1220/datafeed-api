@@ -18,7 +18,7 @@ class DatafeedSearch extends ApiSearchModel
 {
     /**
      * @var null|string Query related models, using comma(,) be seperator
-     * @OA\Property(enum={"statusLabel"}, default=null)
+     * @OA\Property(enum={"statusLabel", "client", "creator", "updater"}, default=null)
      */
     public $expand;
 

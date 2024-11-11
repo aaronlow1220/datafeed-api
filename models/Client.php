@@ -27,6 +27,9 @@ use yii\db\ActiveRecord;
  */
 class Client extends ActiveRecord
 {
+    use UserCreatorTrait;
+    use UserUpdaterTrait;
+
     /**
      * Return table name of client.
      *
@@ -93,6 +96,6 @@ class Client extends ActiveRecord
      */
     public function extraFields()
     {
-        return [];
+        return ['creator', 'updater'];
     }
 }

@@ -5,6 +5,7 @@ namespace app\models;
 use yii\behaviors\AttributeTypecastBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -30,6 +31,10 @@ use yii\db\ActiveRecord;
  */
 class FeedFile extends ActiveRecord
 {
+    use TaxonomyTrait;
+    use UserCreatorTrait;
+    use UserUpdaterTrait;
+
     /**
      * Return table name of feed_file.
      *
@@ -98,6 +103,46 @@ class FeedFile extends ActiveRecord
      */
     public function extraFields()
     {
-        return ['client', 'platform', 'file'];
+        return ['statusLabel', 'client', 'platform', 'file', 'creator', 'updater'];
+    }
+
+    /**
+     * Get status label.
+     *
+     * @return ActiveQuery
+     */
+    public function getStatusLabel(): ActiveQuery
+    {
+        return $this->getTaxonomy('feed_file_status', 'status');
+    }
+
+    /**
+     * Get client.
+     *
+     * @return ActiveQuery
+     */
+    public function getClient(): ActiveQuery
+    {
+        return $this->hasOne(Client::class, ['id' => 'client_id']);
+    }
+
+    /**
+     * Get platform.
+     *
+     * @return ActiveQuery
+     */
+    public function getPlatform(): ActiveQuery
+    {
+        return $this->hasOne(Platform::class, ['id' => 'platform_id']);
+    }
+
+    /**
+     * Get file.
+     *
+     * @return ActiveQuery
+     */
+    public function getFile(): ActiveQuery
+    {
+        return $this->hasOne(File::class, ['id' => 'file_id']);
     }
 }

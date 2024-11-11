@@ -18,7 +18,7 @@ class FeedFileSearch extends ApiSearchModel
 {
     /**
      * @var null|string Query related models, using comma(,) be seperator
-     * @OA\Property(enum={"statusLabel"}, default=null)
+     * @OA\Property(enum={"statusLabel", "client", "platform", "file", "creator", "updater"}, default=null)
      */
     public $expand;
 

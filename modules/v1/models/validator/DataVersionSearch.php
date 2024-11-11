@@ -16,7 +16,7 @@ class DataVersionSearch extends ApiSearchModel
 {
     /**
      * @var null|string Query related models, using comma(,) be seperator
-     * @OA\Property(enum={"creator", "updater"}, default=null)
+     * @OA\Property(enum={"client", "creator", "updator"}, default=null)
      */
     public $expand;
 

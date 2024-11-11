@@ -46,6 +46,8 @@ use yii\db\ActiveRecord;
 class Datafeed extends ActiveRecord
 {
     use TaxonomyTrait;
+    use UserCreatorTrait;
+    use UserUpdaterTrait;
 
     /**
      * Return table name of datafeed.
@@ -115,7 +117,7 @@ class Datafeed extends ActiveRecord
      */
     public function extraFields()
     {
-        return ['statusLabel'];
+        return ['statusLabel', 'client', 'creator', 'updater'];
     }
 
     /**
@@ -126,5 +128,15 @@ class Datafeed extends ActiveRecord
     public function getStatusLabel(): ActiveQuery
     {
         return $this->getTaxonomy('datafeed_status', 'status');
+    }
+
+    /**
+     * Get client.
+     *
+     * @return ActiveQuery
+     */
+    public function getClient(): ActiveQuery
+    {
+        return $this->hasOne(Client::class, ['id' => 'client_id']);
     }
 }

@@ -16,7 +16,7 @@ class FileSearch extends ApiSearchModel
 {
     /**
      * @var null|string Query related models, using comma(,) be seperator
-     * @OA\Property(enum={"statusLabel"}, default=null)
+     * @OA\Property(enum={"creator", "updater"}, default=null)
      */
     public $expand;
 

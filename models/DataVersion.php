@@ -5,6 +5,7 @@ namespace app\models;
 use yii\behaviors\AttributeTypecastBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -94,5 +95,15 @@ class DataVersion extends ActiveRecord
     public function extraFields()
     {
         return ['client'];
+    }
+
+    /**
+     * Get client.
+     *
+     * @return ActiveQuery
+     */
+    public function getClient(): ActiveQuery
+    {
+        return $this->hasOne(Client::class, ['id' => 'client_id']);
     }
 }

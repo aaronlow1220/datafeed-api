@@ -313,8 +313,12 @@ class DatafeedService
         $data = [];
         $file = fopen($filePath, 'r');
 
-        // Remove BOM
+        // Detect BOM and adjust the file pointer
         $bom = fread($file, 3);
+        if ("\xEF\xBB\xBF" !== $bom) {
+            // If no BOM, reset the file pointer to the beginning
+            rewind($file);
+        }
 
         // Read the first line to get the column headers
         $headers = fgetcsv($file);
@@ -329,36 +333,6 @@ class DatafeedService
         fclose($file);
 
         return $data;
-    }
-
-    /**
-     * Read feed file.
-     *
-     * @param string $directoryPath
-     *
-     * @return string
-     */
-    public function readFeedFile(string $directoryPath): string
-    {
-        try {
-            $filePath = null;
-            $files = scandir($directoryPath);
-            foreach ($files as $file) {
-                if (false !== strpos($file, '_feed')) {
-                    $filePath = $directoryPath.'/'.$file;
-
-                    break;
-                }
-            }
-
-            if (!$filePath) {
-                throw new Exception('File not found');
-            }
-
-            return $filePath;
-        } catch (Throwable $e) {
-            throw $e;
-        }
     }
 
     /**

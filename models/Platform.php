@@ -27,6 +27,9 @@ use yii\db\ActiveRecord;
  */
 class Platform extends ActiveRecord
 {
+    use UserCreatorTrait;
+    use UserUpdaterTrait;
+
     /**
      * Return table name of platform.
      *
@@ -93,6 +96,6 @@ class Platform extends ActiveRecord
      */
     public function extraFields()
     {
-        return [];
+        return ['creator', 'updater'];
     }
 }

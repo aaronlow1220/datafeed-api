@@ -95,6 +95,6 @@ class File extends ActiveRecord
      */
     public function extraFields()
     {
-        return [];
+        return ['creator', 'updater'];
     }
 }
