@@ -350,29 +350,6 @@ class DatafeedService
      */
     public function readCsv(string $filePath): string
     {
-        // $data = [];
-        // $file = fopen($filePath, 'r');
-
-        // // Detect BOM and adjust the file pointer
-        // $bom = fread($file, 3);
-        // if ("\xEF\xBB\xBF" !== $bom) {
-        //     // If no BOM, reset the file pointer to the beginning
-        //     rewind($file);
-        // }
-
-        // // Read the first line to get the column headers
-        // $headers = fgetcsv($file);
-
-        // // Loop through the rest of the file to get the data
-        // while (($row = fgetcsv($file)) !== false) {
-        //     // Combine headers with corresponding row data
-        //     $data[] = array_combine($headers, $row);
-        // }
-
-        // // Close the file
-        // fclose($file);
-
-        // return $data;
         // Open the original file
         $file = fopen($filePath, 'r');
         $tempFilePath = __DIR__.'/../../runtime/cache/'.uniqid().'.csv';
@@ -436,8 +413,4 @@ class DatafeedService
 
         return $data;
     }
-
-    // public renameCsvKey(){
-
-    // }
 }
