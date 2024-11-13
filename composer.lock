@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af45eecb0b37633fafb36075285eab32",
+    "content-hash": "c1d4255ca6ed3271b3cd52dfd9d6c007",
     "packages": [
         {
             "name": "atellitech/utils-yii2",
@@ -545,6 +545,52 @@
             "time": "2024-09-05T19:07:26+00:00"
         },
         {
+            "name": "flow-php/dremel",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/dremel.git",
+                "reference": "5147042457b3193b1ce5c1a2d76459cf2775cc0d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/dremel/zipball/5147042457b3193b1ce5c1a2d76459cf2775cc0d",
+                "reference": "5147042457b3193b1ce5c1a2d76459cf2775cc0d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Dremel algorithm implementation",
+            "keywords": [
+                "Algorithm",
+                "dremel",
+                "etl",
+                "extract",
+                "filter",
+                "load",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/dremel/issues",
+                "source": "https://github.com/flow-php/dremel/tree/0.10.0"
+            },
+            "time": "2024-09-05T19:07:33+00:00"
+        },
+        {
             "name": "flow-php/etl",
             "version": "0.10.0",
             "source": {
@@ -651,6 +697,57 @@
             "time": "2024-10-03T17:12:22+00:00"
         },
         {
+            "name": "flow-php/etl-adapter-parquet",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/etl-adapter-parquet.git",
+                "reference": "ba01b2bba6769c72a89dc7a2f6d451264a5d9634"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/etl-adapter-parquet/zipball/ba01b2bba6769c72a89dc7a2f6d451264a5d9634",
+                "reference": "ba01b2bba6769c72a89dc7a2f6d451264a5d9634",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "flow-php/etl": "^0.10.0 || 1.x-dev",
+                "flow-php/parquet": "^0.10.0 || 1.x-dev",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/ETL/Adapter/Parquet/functions.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Adapter - Parquet",
+            "keywords": [
+                "adapter",
+                "etl",
+                "extract",
+                "load",
+                "parquet",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/etl-adapter-parquet/issues",
+                "source": "https://github.com/flow-php/etl-adapter-parquet/tree/1.x"
+            },
+            "time": "2024-10-25T11:31:00+00:00"
+        },
+        {
             "name": "flow-php/filesystem",
             "version": "1.x-dev",
             "source": {
@@ -703,6 +800,61 @@
             "time": "2024-10-14T10:18:04+00:00"
         },
         {
+            "name": "flow-php/parquet",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/parquet.git",
+                "reference": "5117acd988bf7d57bb823e6d9b5f66ca15714cea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/parquet/zipball/5117acd988bf7d57bb823e6d9b5f66ca15714cea",
+                "reference": "5117acd988bf7d57bb823e6d9b5f66ca15714cea",
+                "shasum": ""
+            },
+            "require": {
+                "composer-runtime-api": "^2.1",
+                "ext-bcmath": "*",
+                "ext-zlib": "*",
+                "flow-php/dremel": "^0.10.0 || 1.x-dev",
+                "flow-php/snappy": "^0.10.0 || 1.x-dev",
+                "packaged/thrift": "^0.15.0",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Flow/Parquet/functions.php",
+                    "src/stubs.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - library for reading and writing Parquet files",
+            "keywords": [
+                "etl",
+                "extract",
+                "filter",
+                "load",
+                "parquet",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/parquet/issues",
+                "source": "https://github.com/flow-php/parquet/tree/1.x"
+            },
+            "time": "2024-10-25T11:31:16+00:00"
+        },
+        {
             "name": "flow-php/rdsl",
             "version": "1.x-dev",
             "source": {
@@ -748,6 +900,56 @@
                 "source": "https://github.com/flow-php/rdsl/tree/0.10.0"
             },
             "time": "2024-09-05T19:07:29+00:00"
+        },
+        {
+            "name": "flow-php/snappy",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flow-php/snappy.git",
+                "reference": "89917ac1c12b0cbf62b7449a217c259ecf48f4a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flow-php/snappy/zipball/89917ac1c12b0cbf62b7449a217c259ecf48f4a5",
+                "reference": "89917ac1c12b0cbf62b7449a217c259ecf48f4a5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "polyfill.php"
+                ],
+                "psr-4": {
+                    "Flow\\": [
+                        "src/Flow"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP ETL - Google Snappy compression algorithm implementation",
+            "keywords": [
+                "Algorithm",
+                "compression",
+                "etl",
+                "extract",
+                "filter",
+                "load",
+                "snappy",
+                "transform"
+            ],
+            "support": {
+                "issues": "https://github.com/flow-php/snappy/issues",
+                "source": "https://github.com/flow-php/snappy/tree/0.10.0"
+            },
+            "time": "2024-07-31T06:09:31+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -941,6 +1143,45 @@
                 }
             ],
             "time": "2022-08-04T09:53:51+00:00"
+        },
+        {
+            "name": "packaged/thrift",
+            "version": "0.15.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/packaged/thrift.git",
+                "reference": "dbf4e5ff5c85d56ccae62265ed25424b366ce269"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/packaged/thrift/zipball/dbf4e5ff5c85d56ccae62265ed25424b366ce269",
+                "reference": "dbf4e5ff5c85d56ccae62265ed25424b366ce269",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5 || ^7.0 || ^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Thrift\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Apache Thrift",
+            "homepage": "http://thrift.apache.org/",
+            "keywords": [
+                "apache",
+                "thrift"
+            ],
+            "support": {
+                "issues": "https://github.com/packaged/thrift/issues",
+                "source": "https://github.com/packaged/thrift/tree/0.15.0"
+            },
+            "time": "2021-09-23T10:34:40+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -8007,7 +8248,9 @@
         "atellitech/utils-yii2": 20,
         "doctrine/annotations": 20,
         "flow-php/etl-adapter-csv": 20,
-        "friendsofphp/php-cs-fixer": 20
+        "flow-php/parquet": 20,
+        "friendsofphp/php-cs-fixer": 20,
+        "timeweb/phpstan-enum": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

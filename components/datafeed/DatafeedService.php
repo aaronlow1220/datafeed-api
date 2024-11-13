@@ -4,10 +4,10 @@ namespace app\components\datafeed;
 
 use Exception;
 
+use function Flow\ETL\Adapter\CSV\from_csv;
 use function Flow\ETL\Adapter\CSV\to_csv;
 use function Flow\ETL\DSL\data_frame;
 use function Flow\ETL\DSL\from_array;
-use function Flow\ETL\DSL\to_array;
 
 use SimpleXMLElement;
 use Throwable;
@@ -33,43 +33,63 @@ class DatafeedService
      * Create datafeed.
      *
      * @param ActiveRecord $client
-     * @param array<int, mixed> $data
+     * @param string $filePath
      *
-     * @return void
+     * @return ActiveRecord
      */
-    public function create(ActiveRecord $client, array $data)
+    public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): ActiveRecord
     {
+        set_time_limit(180);
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
-        $clientDatafeed = $this->datafeedRepo->findByClientId($client['id'])->all();
-
-        // Create a map of existing datafeeds
-        $existingDatafeeds = [];
-        foreach ($clientDatafeed as $datafeed) {
-            $existingDatafeeds[$datafeed['datafeedid']] = $datafeed;
-        }
+        $datafeed = null;
 
         try {
-            $newDatafeedIds = [];
-            foreach ($data as $value) {
-                $value['client_id'] = $client['id'];
-                $datafeedId = $value['datafeedid'];
-                $newDatafeedIds[] = $datafeedId;
+            $clientDatafeed = $this->datafeedRepo->findByClientId($client['id'])->all();
+            $file = fopen($filePath, 'r');
+            $processedIds = [];
 
-                if (isset($existingDatafeeds[$datafeedId])) {
-                    $this->datafeedRepo->update($existingDatafeeds[$datafeedId]['id'], $value);
+            if (!$file) {
+                throw new Exception('File not found', 400);
+            }
+
+            $headers = fgetcsv($file);
+            if (false === $headers) {
+                fclose($file);
+
+                throw new Exception('Invalid CSV format', 400);
+            }
+
+            $existingDatafeed = [];
+            // Get datafeedid from $clienetDatafeed into an array
+            foreach ($clientDatafeed as $datafeed) {
+                $existingDatafeed[] = $datafeed['datafeedid'];
+            }
+
+            while (($row = fgetcsv($file)) !== false) {
+                $record = array_combine($headers, $row);
+                $datafeedid = $record['datafeedid'];
+                $record['client_id'] = $client['id'];
+
+                $processedIds[] = $datafeedid;
+
+                if (in_array($datafeedid, $existingDatafeed)) {
+                    $datafeed = $this->datafeedRepo->update($datafeedid, $record);
                 } else {
-                    $this->datafeedRepo->create($value);
+                    $datafeed = $this->datafeedRepo->create($record);
                 }
             }
 
             // Update status to 0 for datafeeds not in the new data array
-            foreach ($existingDatafeeds as $datafeedId => $datafeed) {
-                if (!in_array($datafeedId, $newDatafeedIds)) {
-                    $this->datafeedRepo->update($datafeed['id'], ['status' => 0]);
+            foreach ($existingDatafeed as $datafeedId) {
+                if (!in_array($datafeedId, $processedIds)) {
+                    $this->datafeedRepo->update($datafeedId, ['status' => 0]);
                 }
             }
 
+            fclose($file);
             $transaction->commit();
+
+            return $datafeed;
         } catch (Throwable $e) {
             $transaction->rollBack();
 
@@ -83,9 +103,9 @@ class DatafeedService
      * @param ActiveRecord $client
      * @param string $filePath
      *
-     * @return array<int, mixed>
+     * @return ActiveRecord
      */
-    public function createFromFile(ActiveRecord $client, string $filePath): array
+    public function createFromFile(ActiveRecord $client, string $filePath): ActiveRecord
     {
         try {
             $data = [];
@@ -101,7 +121,7 @@ class DatafeedService
                 $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
             }
 
-            $processedData = $this->transformDataFromFile($filePath, $client);
+            $processedDataPath = $this->transformDataToFile($filePath, $client);
 
             $finalDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
 
@@ -109,7 +129,7 @@ class DatafeedService
                 throw new Exception('Data version not match', 400);
             }
 
-            $this->create($client, $processedData);
+            $datafeed = $this->createOrUpdateWithFile($client, $processedDataPath);
 
             $dataVersion = [
                 'filename' => basename($filePath),
@@ -119,7 +139,9 @@ class DatafeedService
 
             $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
 
-            return $processedData;
+            unlink($processedDataPath);
+
+            return $datafeed;
         } catch (Throwable $e) {
             throw $e;
         }
@@ -131,24 +153,23 @@ class DatafeedService
      * @param string $filePath
      * @param ActiveRecord $client
      *
-     * @return array<int, mixed>
+     * @return string
      */
-    public function transformDataFromFile(string $filePath, ActiveRecord $client): array
+    public function transformDataToFile(string $filePath, ActiveRecord $client): string
     {
         try {
             $fileType = $this->getFileExtension($filePath);
-
-            $data = [];
+            $cachedDataPath = '';
 
             switch ($fileType) {
                 case 'xml':
-                    $data = $this->readXml($filePath);
+                    $cachedDataPath = $this->readXml($filePath);
 
                     break;
 
                 case 'txt':
                 case 'csv':
-                    $data = $this->readCsv($filePath);
+                    $cachedDataPath = $this->readCsv($filePath);
 
                     break;
 
@@ -156,7 +177,7 @@ class DatafeedService
                     throw new Exception('File type not supported.');
             }
 
-            return $this->transform($data, $client);
+            return $this->transform($cachedDataPath, $client);
         } catch (Throwable $e) {
             throw $e;
         }
@@ -165,16 +186,15 @@ class DatafeedService
     /**
      * Transform the data from the file.
      *
-     * @param array<int, mixed> $data
+     * @param string $dataPath
      * @param ActiveRecord $client
      *
-     * @return array<int, mixed>
+     * @return string
      */
-    public function transform(array $data, ActiveRecord $client): array
+    public function transform(string $dataPath, ActiveRecord $client): string
     {
-        set_time_limit(180);
-
         try {
+            $tempFilePath = __DIR__.'/../../runtime/cache/'.uniqid().'.csv';
             $clientInfo = json_decode($client['data'], true);
 
             $select = [
@@ -199,18 +219,19 @@ class DatafeedService
                 'custom_label_4' => 'custom_label_4',
             ];
 
-            $processedData = [];
+            // get key of the file
+            $header = fopen($dataPath, 'r');
+            $header = fgetcsv($header);
 
             // Unset empty values and non-existent keys in data from clientInfo and select
             foreach ($clientInfo as $key => $value) {
-                if ('' === $value || !array_key_exists($value, $data[0])) {
+                if ('' === $value || !in_array($value, $header)) {
                     unset($clientInfo[$key], $select[$key]);
-                    // unset($select[$key]);
                 }
             }
 
             $etl = data_frame()
-                ->read(from_array($data));
+                ->read(from_csv($dataPath));
 
             // Rename columns
             foreach ($clientInfo as $key => $value) {
@@ -219,9 +240,11 @@ class DatafeedService
 
             $etl->select(...$select);
 
-            $etl->load(to_array($processedData))->run();
+            $etl->write(to_csv($tempFilePath))->run();
 
-            return $processedData;
+            unlink($dataPath);
+
+            return $tempFilePath;
         } catch (Throwable $e) {
             throw $e;
         }
@@ -287,22 +310,35 @@ class DatafeedService
      *
      * @param string $filePath
      *
-     * @return array<int, mixed>
+     * @return string
      */
-    public function readXml(string $filePath): array
+    public function readXml(string $filePath): string
     {
-        $data = [];
         $xml = new SimpleXMLElement($filePath, 0, true);
+        $outputCsvPath = __DIR__.'/../../runtime/cache/'.uniqid().'.csv';
+        $csvFile = fopen($outputCsvPath, 'w');
+
+        $headerWritten = false;
 
         foreach ($xml->channel->item as $item) {
             $itemData = [];
             foreach ($item->children('g', true) as $key => $value) {
-                $itemData[$key] = trim((string) $value);
+                $itemData[$key] = preg_replace('/\s+/', ' ', (string) $value);
             }
-            $data[] = $itemData;
+
+            // Write CSV header (once)
+            if (!$headerWritten) {
+                fputcsv($csvFile, array_keys($itemData));
+                $headerWritten = true;
+            }
+
+            // Write data row to CSV
+            fputcsv($csvFile, array_values($itemData));
         }
 
-        return $data;
+        fclose($csvFile);
+
+        return $outputCsvPath;
     }
 
     /**
@@ -310,33 +346,53 @@ class DatafeedService
      *
      * @param string $filePath
      *
-     * @return array<int, mixed>
+     * @return string
      */
-    public function readCsv(string $filePath): array
+    public function readCsv(string $filePath): string
     {
-        $data = [];
+        // $data = [];
+        // $file = fopen($filePath, 'r');
+
+        // // Detect BOM and adjust the file pointer
+        // $bom = fread($file, 3);
+        // if ("\xEF\xBB\xBF" !== $bom) {
+        //     // If no BOM, reset the file pointer to the beginning
+        //     rewind($file);
+        // }
+
+        // // Read the first line to get the column headers
+        // $headers = fgetcsv($file);
+
+        // // Loop through the rest of the file to get the data
+        // while (($row = fgetcsv($file)) !== false) {
+        //     // Combine headers with corresponding row data
+        //     $data[] = array_combine($headers, $row);
+        // }
+
+        // // Close the file
+        // fclose($file);
+
+        // return $data;
+        // Open the original file
         $file = fopen($filePath, 'r');
+        $tempFilePath = __DIR__.'/../../runtime/cache/'.uniqid().'.csv';
 
-        // Detect BOM and adjust the file pointer
-        $bom = fread($file, 3);
-        if ("\xEF\xBB\xBF" !== $bom) {
-            // If no BOM, reset the file pointer to the beginning
-            rewind($file);
+        // Detect BOM
+        $bom = fread($file, 3);  // Read first 3 bytes
+        if ("\xEF\xBB\xBF" === $bom) {
+            // If BOM detected, remove it and get the rest of the content
+            $content = fread($file, filesize($filePath) - 3);
+
+            file_put_contents($tempFilePath, $content);  // Write content without BOM to the temp file
+        } else {
+            copy($filePath, $tempFilePath);  // Copy file to the temp file
         }
 
-        // Read the first line to get the column headers
-        $headers = fgetcsv($file);
-
-        // Loop through the rest of the file to get the data
-        while (($row = fgetcsv($file)) !== false) {
-            // Combine headers with corresponding row data
-            $data[] = array_combine($headers, $row);
-        }
-
-        // Close the file
+        // Close the original file
         fclose($file);
 
-        return $data;
+        // Return the path to the temporary file
+        return $tempFilePath;
     }
 
     /**
@@ -380,4 +436,8 @@ class DatafeedService
 
         return $data;
     }
+
+    // public renameCsvKey(){
+
+    // }
 }
