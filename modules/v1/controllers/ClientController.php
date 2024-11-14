@@ -178,7 +178,10 @@ class ClientController extends ActiveApiController
      */
     public function actions()
     {
-        return parent::actions();
+        $actions = parent::actions();
+        unset($actions['delete']);
+
+        return $actions;
     }
 
     /**
@@ -209,7 +212,7 @@ class ClientController extends ActiveApiController
      *     )
      * )
      *
-     * Search Client
+     * Search Client.
      *
      * @return ActiveDataProvider
      */

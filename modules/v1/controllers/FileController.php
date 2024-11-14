@@ -89,13 +89,6 @@ class FileController extends ActiveApiController
     }
 
     /**
-     * Upload file.
-     *
-     * @param int $id
-     *
-     * @return array<int, mixed>
-     */
-    /**
      * @OA\Post(
      *    path="/file/upload/{id}",
      *    summary="Upload",
@@ -134,6 +127,9 @@ class FileController extends ActiveApiController
      *    )
      * )
      *
+     * Upload File.
+     *
+     * @param int $id
      * @return ActiveRecord
      */
     public function actionUpload(int $id): ActiveRecord
@@ -185,7 +181,7 @@ class FileController extends ActiveApiController
      *     )
      * )
      *
-     * Search DataVersion
+     * Search File.
      *
      * @return ActiveDataProvider
      */

@@ -175,28 +175,25 @@ class DatafeedController extends ActiveApiController
      * Export datafeed.
      *
      * @param int $id
-     * @param string $platformid
+     * @param int $platformid
      * @return ActiveRecord
      */
-    public function actionExport(int $id, string $platformid): ActiveRecord
+    public function actionExport(int $id, int $platformid): ActiveRecord
     {
-        $resultPath = __DIR__.'/../../../runtime/files/result';
         $params = Yii::$app->request->get();
         unset($params['id'], $params['platformid']);
         $filter = count($params) ? json_encode($params, JSON_UNESCAPED_UNICODE) : '{}';
 
         try {
-            $client = $this->clientRepo->findOne(['id' => $id]);
-            $platform = $this->platformRepo->findOne(['id' => $platformid]);
+            $client = $this->clientRepo->findOne($id);
+            $platform = $this->platformRepo->findOne($platformid);
             $feedFile = $this->feedFileRepo->findOne(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter]);
 
             if (!$feedFile) {
                 $feedFile = $this->feedFileRepo->create(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter]);
             }
 
-            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $resultPath, uniqid(), $client['name'], $platform['name']);
-
-            $this->datafeedService->export($platform, $client, $feedFile, $resultPath);
+            $resultPath = $this->datafeedService->export($platform, $client, $feedFile);
 
             $data = [
                 'mime' => 'text/csv',
@@ -248,7 +245,7 @@ class DatafeedController extends ActiveApiController
      *     )
      * )
      *
-     * Search Datafeed
+     * Search Datafeed.
      *
      * @return ActiveDataProvider
      */

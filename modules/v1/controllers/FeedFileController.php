@@ -188,7 +188,10 @@ class FeedFileController extends ActiveApiController
      */
     public function actions()
     {
-        return parent::actions();
+        $actions = parent::actions();
+        unset($actions['delete']);
+
+        return $actions;
     }
 
     /**
@@ -214,6 +217,8 @@ class FeedFileController extends ActiveApiController
      *         )
      *     )
      * )
+     *
+     * Download FeedFile.
      *
      * @param int $id
      * @return Response
@@ -262,7 +267,7 @@ class FeedFileController extends ActiveApiController
      *     )
      * )
      *
-     * Search FeedFile
+     * Search FeedFile.
      *
      * @return ActiveDataProvider
      */

@@ -134,7 +134,7 @@ class DataVersionController extends ActiveApiController
     {
         $actions = parent::actions();
 
-        unset($actions['index']);
+        unset($actions['index'], $actions['delete']);
 
         return $actions;
     }
@@ -167,7 +167,7 @@ class DataVersionController extends ActiveApiController
      *     )
      * )
      *
-     * Search DataVersion
+     * Search DataVersion.
      *
      * @return ActiveDataProvider
      */

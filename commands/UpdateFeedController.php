@@ -60,14 +60,9 @@ class UpdateFeedController extends Controller
      */
     public function actionUpdateAll(FeedFileRepo $feedFileRepo, FileRepo $fileRepo, PlatformRepo $platformRepo, ClientRepo $clientRepo, DatafeedService $datafeedService)
     {
-        $resultPath = __DIR__.'/../runtime/files/result';
         $feedFiles = $feedFileRepo->find()->where(['status' => '1'])->all();
 
         try {
-            if (!is_dir($resultPath)) {
-                mkdir($resultPath, 0777, true);
-            }
-
             $client = null;
             $platform = null;
             foreach ($feedFiles as $feedFile) {
@@ -80,16 +75,14 @@ class UpdateFeedController extends Controller
                     $platform = $platformRepo->find()->where(['id' => $feedFile['platform_id']])->one();
                 }
 
-                $filePath = sprintf('%s/%s_%s_%s_feed.csv', $resultPath, uniqid(), $client['name'], $platform['name']);
-
-                $datafeedService->export($platform, $client, $feedFile, $filePath);
+                $resultPath = $datafeedService->export($platform, $client, $feedFile);
 
                 $data = [
                     'mime' => 'text/csv',
                     'extension' => 'csv',
-                    'filename' => basename($filePath),
-                    'path' => $filePath,
-                    'size' => filesize($filePath),
+                    'filename' => basename($resultPath),
+                    'path' => $resultPath,
+                    'size' => filesize($resultPath),
                 ];
 
                 $file = $fileRepo->create($data);
@@ -121,24 +114,18 @@ class UpdateFeedController extends Controller
     public function actionUpdateFeed(FeedFileRepo $feedFileRepo, FileRepo $fileRepo, PlatformRepo $platformRepo, ClientRepo $clientRepo, DatafeedService $datafeedService)
     {
         try {
-            $resultPath = __DIR__.'/../runtime/files/result';
-            if (!is_dir($resultPath)) {
-                mkdir($resultPath, 0777, true);
-            }
             $feedFile = $feedFileRepo->findOne(['id' => $this->feed, 'status' => '1']);
             $client = $clientRepo->find()->where(['id' => $feedFile['client_id']])->one();
             $platform = $platformRepo->find()->where(['id' => $feedFile['client_id']])->one();
 
-            $filePath = sprintf('%s/%s_%s_%s_feed.csv', $resultPath, uniqid(), $client['name'], $platform['name']);
-
-            $datafeedService->export($platform, $client, $feedFile, $filePath);
+            $resultPath = $datafeedService->export($platform, $client, $feedFile);
 
             $data = [
                 'mime' => 'text/csv',
                 'extension' => 'csv',
-                'filename' => basename($filePath),
-                'path' => $filePath,
-                'size' => filesize($filePath),
+                'filename' => basename($resultPath),
+                'path' => $resultPath,
+                'size' => filesize($resultPath),
             ];
 
             $file = $fileRepo->create($data);

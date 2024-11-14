@@ -209,7 +209,7 @@ class PlatformController extends ActiveApiController
      *     )
      * )
      *
-     * Search Platform
+     * Search Platform.
      *
      * @return ActiveDataProvider
      */
