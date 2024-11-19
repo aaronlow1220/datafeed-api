@@ -42,124 +42,60 @@ class DatafeedService
      *
      * @return ActiveRecord
      */
-    // public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): ActiveRecord
-    // {
-    //     set_time_limit(180);
-    //     $transaction = $this->datafeedRepo->getDb()->beginTransaction();
-    //     $datafeed = null;
-
-    //     try {
-    //         $clientDatafeed = $this->datafeedRepo->findByClientId($client['id'])->all();
-    //         $file = fopen($filePath, 'r');
-    //         $processedIds = [];
-
-    //         if (!$file) {
-    //             throw new Exception('File not found', 400);
-    //         }
-
-    //         $headers = fgetcsv($file);
-    //         if (false === $headers) {
-    //             fclose($file);
-
-    //             throw new Exception('Invalid CSV format', 400);
-    //         }
-
-    //         $existingDatafeed = [];
-    //         foreach ($clientDatafeed as $datafeed) {
-    //             $existingDatafeed[] = $datafeed['datafeedid'];
-    //         }
-
-    //         while (($row = fgetcsv($file)) !== false) {
-    //             $record = array_combine($headers, $row);
-    //             $record['client_id'] = $client['id'];
-
-    //             $processedIds[] = $record['datafeedid'];
-
-    //             if (in_array($record['datafeedid'], $existingDatafeed)) {
-    //                 $datafeed = $this->datafeedRepo->update(['client_id' => $client['id'], 'datafeedid' => $record['datafeedid']], $record);
-    //             } else {
-    //                 $datafeed = $this->datafeedRepo->create($record);
-    //             }
-    //         }
-
-    //         foreach ($existingDatafeed as $datafeedId) {
-    //             if (!in_array($datafeedId, $processedIds)) {
-    //                 $this->datafeedRepo->update(['datafeedid' => $datafeedId, 'client_id' => $client['id']], ['status' => '0']);
-    //             }
-    //         }
-
-    //         fclose($file);
-    //         $transaction->commit();
-
-    //         return $datafeed;
-    //     } catch (Throwable $e) {
-    //         $transaction->rollBack();
-
-    //         throw $e;
-    //     }
-    // }
     public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): ActiveRecord
     {
         set_time_limit(180);
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
-        $file = null;
         $datafeed = null;
 
         try {
-            $clientDatafeeds = $this->datafeedRepo->findByClientId($client['id'])->all();
-
-            // Open the file and handle errors
-            if (!is_readable($filePath) || !($file = fopen($filePath, 'r'))) {
-                throw new Exception('Unable to read the file: '.$filePath, 400);
-            }
-
-            // Get headers from the CSV file
-            $headers = fgetcsv($file);
-            if (false === $headers) {
-                throw new Exception('Invalid or empty CSV format', 400);
-            }
-
-            // Prepare existing datafeed lookup for quick access
-            $existingDatafeedMap = array_flip(array_column($clientDatafeeds, 'datafeedid'));
+            $clientDatafeed = $this->datafeedRepo->findByClientId($client['id'])->all();
+            $file = fopen($filePath, 'r');
             $processedIds = [];
 
-            // Process each row in the CSV file
+            if (!$file) {
+                throw new Exception('File not found', 400);
+            }
+
+            $headers = fgetcsv($file);
+            if (false === $headers) {
+                fclose($file);
+
+                throw new Exception('Invalid CSV format', 400);
+            }
+
+            $existingDatafeed = [];
+            foreach ($clientDatafeed as $datafeed) {
+                $existingDatafeed[] = $datafeed['datafeedid'];
+            }
+
             while (($row = fgetcsv($file)) !== false) {
                 $record = array_combine($headers, $row);
-                if (!$record || !isset($record['datafeedid'])) {
-                    throw new Exception('Malformed CSV row detected', 400);
-                }
-                $record['status'] = '1';
                 $record['client_id'] = $client['id'];
+
                 $processedIds[] = $record['datafeedid'];
 
-                // Check if datafeed exists, then update or create
-                if (isset($existingDatafeedMap[$record['datafeedid']])) {
+                if (in_array($record['datafeedid'], $existingDatafeed)) {
                     $datafeed = $this->datafeedRepo->update(['client_id' => $client['id'], 'datafeedid' => $record['datafeedid']], $record);
                 } else {
                     $datafeed = $this->datafeedRepo->create($record);
                 }
             }
 
-            // Mark unprocessed datafeeds as inactive
-            $unprocessedIds = array_diff(array_keys($existingDatafeedMap), $processedIds);
-            if ($unprocessedIds) {
-                $this->datafeedRepo->update(['client_id' => $client['id'], 'datafeedid' => $unprocessedIds], ['status' => '0']);
+            foreach ($existingDatafeed as $datafeedId) {
+                if (!in_array($datafeedId, $processedIds)) {
+                    $this->datafeedRepo->update(['datafeedid' => $datafeedId, 'client_id' => $client['id']], ['status' => '0']);
+                }
             }
 
+            fclose($file);
             $transaction->commit();
 
             return $datafeed;
         } catch (Throwable $e) {
-            // Rollback on error
             $transaction->rollBack();
 
             throw $e;
-        } finally {
-            // Ensure the file is closed
-            if ($file) {
-                fclose($file);
-            }
         }
     }
 
