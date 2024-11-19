@@ -44,7 +44,6 @@ class DatafeedService
      */
     public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): ActiveRecord
     {
-        set_time_limit(180);
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
         $datafeed = null;
 
