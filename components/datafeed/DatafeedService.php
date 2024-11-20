@@ -40,59 +40,77 @@ class DatafeedService
      * @param ActiveRecord $client
      * @param string $filePath
      *
-     * @return ActiveRecord
+     * @return null|ActiveRecord
      */
-    public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): ActiveRecord
+    public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): ?ActiveRecord
     {
+        set_time_limit(180);
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
-        $datafeed = null;
 
         try {
-            $clientDatafeed = $this->datafeedRepo->findByClientId($client['id'])->all();
+            $feed = null;
+            $file = null;
+            $clientDatafeeds = $this->datafeedRepo->findByClientId($client['id']);
+            $hasExistingDatafeeds = $clientDatafeeds->exists();
             $file = fopen($filePath, 'r');
-            $processedIds = [];
-
-            if (!$file) {
-                throw new Exception('File not found', 400);
-            }
-
             $headers = fgetcsv($file);
-            if (false === $headers) {
-                fclose($file);
+            $processedDatafeedIds = [];
 
-                throw new Exception('Invalid CSV format', 400);
-            }
+            if ($hasExistingDatafeeds) {
+                foreach ($clientDatafeeds->batch(6000) as $datafeeds) {
+                    $existingDatafeedMap = [];
+                    foreach ($datafeeds as $datafeed) {
+                        $existingDatafeedMap[$datafeed['datafeedid']] = $datafeed;
+                    }
 
-            $existingDatafeed = [];
-            foreach ($clientDatafeed as $datafeed) {
-                $existingDatafeed[] = $datafeed['datafeedid'];
-            }
+                    while (($row = fgetcsv($file)) !== false) {
+                        $isDifferent = false;
+                        $record = array_combine($headers, $row);
+                        $record['status'] = '1';
+                        $record['client_id'] = strval($client['id']);
 
-            while (($row = fgetcsv($file)) !== false) {
-                $record = array_combine($headers, $row);
-                $record['client_id'] = $client['id'];
+                        if (in_array($record['datafeedid'], $processedDatafeedIds)) {
+                            continue;
+                        }
 
-                $processedIds[] = $record['datafeedid'];
+                        if (isset($existingDatafeedMap[$record['datafeedid']])) {
+                            $existingRecord = $existingDatafeedMap[$record['datafeedid']];
+                            $isDifferent = $record != array_intersect_key($existingRecord->attributes, $record);
 
-                if (in_array($record['datafeedid'], $existingDatafeed)) {
-                    $datafeed = $this->datafeedRepo->update(['client_id' => $client['id'], 'datafeedid' => $record['datafeedid']], $record);
-                } else {
-                    $datafeed = $this->datafeedRepo->create($record);
+                            if ($isDifferent) {
+                                $feed = $this->datafeedRepo->update($existingRecord, $record);
+                            }
+                            $processedDatafeedIds[] = $record['datafeedid'];
+                        } else {
+                            $feed = $this->datafeedRepo->create($record);
+                            $processedDatafeedIds[] = $record['datafeedid'];
+                        }
+                    }
+                    rewind($file);
+                }
+
+                $notExist = $clientDatafeeds->andWhere(['not in', 'datafeedid', $processedDatafeedIds])->all();
+                foreach ($notExist as $missingDatafeed) {
+                    $this->datafeedRepo->update($missingDatafeed, ['status' => '0']);
+                }
+            } else {
+                while (($row = fgetcsv($file)) !== false) {
+                    $record = array_combine($headers, $row);
+                    $record['status'] = '1';
+                    $record['client_id'] = strval($client['id']);
+                    $feed = $this->datafeedRepo->create($record);
+
+                    $processedDatafeedIds[] = $record['datafeedid'];
                 }
             }
 
-            foreach ($existingDatafeed as $datafeedId) {
-                if (!in_array($datafeedId, $processedIds)) {
-                    $this->datafeedRepo->update(['datafeedid' => $datafeedId, 'client_id' => $client['id']], ['status' => '0']);
-                }
-            }
-
-            fclose($file);
             $transaction->commit();
+            fclose($file);
 
-            return $datafeed;
+            return $feed;
         } catch (Throwable $e) {
             $transaction->rollBack();
+            fclose($file);
 
             throw $e;
         }
