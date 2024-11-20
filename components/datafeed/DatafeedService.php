@@ -8,6 +8,7 @@ use function Flow\ETL\Adapter\CSV\from_csv;
 use function Flow\ETL\Adapter\CSV\to_csv;
 use function Flow\ETL\DSL\data_frame;
 use function Flow\ETL\DSL\from_array;
+use function Flow\ETL\DSL\to_array;
 
 use SimpleXMLElement;
 use Throwable;
@@ -309,43 +310,47 @@ class DatafeedService
      */
     public function export(ActiveRecord $platform, ActiveRecord $client, ActiveRecord $feedFile): string
     {
-        $data = [];
         $filter = json_decode($feedFile['filter'], true);
 
         try {
-            $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter)->all();
+            $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter);
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $this->destPath, uniqid(), $client['name'], $platform['name']);
 
-            foreach ($datafeeds as $datafeed) {
-                $data[] = $datafeed['attributes'];
-            }
-
-            if (!$data) {
-                throw new Exception('Datafeed not found', 400);
-            }
-
+            $file = fopen($resultPath, 'w');
             $platformInfo = json_decode($platform['data'], true);
-
             foreach ($platformInfo as $key => $value) {
                 if ('' === $value) {
                     unset($platformInfo[$key]);
                 }
             }
+            fputcsv($file, $platformInfo);
 
-            if (!empty($feedFile['utm'])) {
-                $data = $this->addUtmParameters($data, $feedFile['utm']);
+            foreach ($datafeeds->batch(6000) as $datafeed) {
+                $data = [];
+                foreach ($datafeed as $item) {
+                    $data[] = $item['attributes'];
+                }
+
+                if (!empty($feedFile['utm'])) {
+                    $data = $this->addUtmParameters($data, $feedFile['utm']);
+                }
+
+                $etl = data_frame()
+                    ->read(from_array($data))
+                    ->select(...array_keys($platformInfo));
+
+                foreach ($platformInfo as $key => $value) {
+                    $etl->rename($key, $value);
+                }
+
+                $data = [];
+                $etl->load(to_array($data))->run();
+                foreach ($data as $feed) {
+                    fputcsv($file, $feed);
+                }
             }
 
-            $etl = data_frame()
-                ->read(from_array($data))
-                ->select(...array_keys($platformInfo));
-
-            foreach ($platformInfo as $key => $value) {
-                $etl->rename($key, $value);
-            }
-
-            // Load to CSV
-            $etl->load(to_csv($resultPath))->run();
+            fclose($file);
 
             return $resultPath;
         } catch (Throwable $e) {
