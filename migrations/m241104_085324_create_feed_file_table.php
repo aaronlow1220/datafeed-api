@@ -30,6 +30,8 @@ class m241104_085324_create_feed_file_table extends Migration
             'updated_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),
             'updated_at' => $this->integer(10)->unsigned()->notNull()->comment('unixtime'),
         ]);
+
+        $this->createIndex('UNIQUE_CLIENT_ID_AND_PLATFORM_ID_AND_FILTER', $this->table, ['client_id', 'platform_id', 'filter'], true);
     }
 
     /**
