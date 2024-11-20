@@ -40,9 +40,9 @@ class DatafeedService
      * @param ActiveRecord $client
      * @param string $filePath
      *
-     * @return null|ActiveRecord
+     * @return string
      */
-    public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): ?ActiveRecord
+    public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): string
     {
         set_time_limit(180);
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
@@ -107,7 +107,7 @@ class DatafeedService
             $transaction->commit();
             fclose($file);
 
-            return $feed;
+            return $filePath;
         } catch (Throwable $e) {
             $transaction->rollBack();
             fclose($file);
@@ -122,9 +122,9 @@ class DatafeedService
      * @param ActiveRecord $client
      * @param string $filePath
      *
-     * @return ActiveRecord
+     * @return void
      */
-    public function createFromFile(ActiveRecord $client, string $filePath): ActiveRecord
+    public function createFromFile(ActiveRecord $client, string $filePath): void
     {
         try {
             $data = [];
@@ -159,8 +159,9 @@ class DatafeedService
             $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
 
             unlink($processedDataPath);
+            unlink($filePath);
 
-            return $datafeed;
+            return;
         } catch (Throwable $e) {
             throw $e;
         }
