@@ -44,7 +44,7 @@ class DatafeedService
      */
     public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): string
     {
-        set_time_limit(180);
+        set_time_limit(0);
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
 
         try {
@@ -56,23 +56,35 @@ class DatafeedService
             $headers = fgetcsv($file);
             $processedDatafeedIds = [];
 
+            // First pass: Read all datafeedids from file into a separate array
+            $fileDatafeedIds = [];
+            while (($row = fgetcsv($file)) !== false) {
+                $record = array_combine($headers, $row);
+                $fileDatafeedIds[] = $record['datafeedid'];
+            }
+
             if ($hasExistingDatafeeds) {
+                // Process database records in batches
                 foreach ($clientDatafeeds->batch(6000) as $datafeeds) {
                     $existingDatafeedMap = [];
                     foreach ($datafeeds as $datafeed) {
                         $existingDatafeedMap[$datafeed['datafeedid']] = $datafeed;
                     }
 
+                    // Only process file rows for datafeedids that exist in current batch
+                    rewind($file);
+                    fgetcsv($file); // Skip headers
                     while (($row = fgetcsv($file)) !== false) {
-                        $isDifferent = false;
                         $record = array_combine($headers, $row);
                         $record['status'] = '1';
                         $record['client_id'] = strval($client['id']);
 
+                        // Skip if we've already processed this datafeedid
                         if (in_array($record['datafeedid'], $processedDatafeedIds)) {
                             continue;
                         }
 
+                        // Only process if this datafeedid exists in current batch
                         if (isset($existingDatafeedMap[$record['datafeedid']])) {
                             $existingRecord = $existingDatafeedMap[$record['datafeedid']];
                             $isDifferent = $record != array_intersect_key($existingRecord->attributes, $record);
@@ -81,25 +93,39 @@ class DatafeedService
                                 $feed = $this->datafeedRepo->update($existingRecord, $record);
                             }
                             $processedDatafeedIds[] = $record['datafeedid'];
-                        } else {
-                            $feed = $this->datafeedRepo->create($record);
-                            $processedDatafeedIds[] = $record['datafeedid'];
                         }
                     }
-                    rewind($file);
                 }
 
-                $notExist = $clientDatafeeds->andWhere(['not in', 'datafeedid', $processedDatafeedIds])->all();
+                // Second pass: Create new records that weren't in database
+                rewind($file);
+                fgetcsv($file); // Skip headers
+                while (($row = fgetcsv($file)) !== false) {
+                    $record = array_combine($headers, $row);
+
+                    // Only create if we haven't processed this id yet
+                    if (!in_array($record['datafeedid'], $processedDatafeedIds)) {
+                        $record['status'] = '1';
+                        $record['client_id'] = strval($client['id']);
+                        $feed = $this->datafeedRepo->create($record);
+                        $processedDatafeedIds[] = $record['datafeedid'];
+                    }
+                }
+
+                // Update status of records that no longer exist in file
+                $notExist = $clientDatafeeds->andWhere(['not in', 'datafeedid', $fileDatafeedIds])->all();
                 foreach ($notExist as $missingDatafeed) {
                     $this->datafeedRepo->update($missingDatafeed, ['status' => '0']);
                 }
             } else {
+                // No existing records, just create all
+                rewind($file);
+                fgetcsv($file); // Skip headers
                 while (($row = fgetcsv($file)) !== false) {
                     $record = array_combine($headers, $row);
                     $record['status'] = '1';
                     $record['client_id'] = strval($client['id']);
                     $feed = $this->datafeedRepo->create($record);
-
                     $processedDatafeedIds[] = $record['datafeedid'];
                 }
             }
@@ -110,7 +136,9 @@ class DatafeedService
             return $filePath;
         } catch (Throwable $e) {
             $transaction->rollBack();
-            fclose($file);
+            if ($file) {
+                fclose($file);
+            }
 
             throw $e;
         }
