@@ -45,11 +45,10 @@ class DatafeedService
      */
     public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): string
     {
-        set_time_limit(0);
+        set_time_limit(600);
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
 
         try {
-            $feed = null;
             $file = null;
             $clientDatafeeds = $this->datafeedRepo->findByClientId($client['id']);
             $hasExistingDatafeeds = $clientDatafeeds->exists();
