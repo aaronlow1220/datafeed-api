@@ -22,7 +22,15 @@ use yii\db\ActiveRecord;
  */
 class DatafeedService
 {
-    private string $destPath;
+    /**
+     * @var string
+     */
+    private string $resultPath;
+
+    /**
+     * @var string
+     */
+    private string $cachePath;
 
     /**
      * DatasetService constructor.
@@ -32,7 +40,8 @@ class DatafeedService
      */
     public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo)
     {
-        $this->destPath = __DIR__.'/../../runtime/files/result';
+        $this->resultPath = __DIR__.'/../../runtime/files/result';
+        $this->cachePath = __DIR__.'/../../runtime/cache';
     }
 
     /**
@@ -46,10 +55,10 @@ class DatafeedService
     public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): string
     {
         set_time_limit(600);
+        $file = null;
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
 
         try {
-            $file = null;
             $clientDatafeeds = $this->datafeedRepo->findByClientId($client['id']);
             $hasExistingDatafeeds = $clientDatafeeds->exists();
             $file = fopen($filePath, 'r');
@@ -73,7 +82,7 @@ class DatafeedService
 
                     // Only process file rows for datafeedids that exist in current batch
                     rewind($file);
-                    fgetcsv($file); // Skip headers
+                    fgetcsv($file);
                     while (($row = fgetcsv($file)) !== false) {
                         $record = array_combine($headers, $row);
                         $record['status'] = '1';
@@ -99,7 +108,7 @@ class DatafeedService
 
                 // Second pass: Create new records that weren't in database
                 rewind($file);
-                fgetcsv($file); // Skip headers
+                fgetcsv($file);
                 while (($row = fgetcsv($file)) !== false) {
                     $record = array_combine($headers, $row);
 
@@ -112,13 +121,12 @@ class DatafeedService
                     }
                 }
 
-                // Update status of records that no longer exist in file
+                // Deactivate missing datafeeds
                 $notExist = $clientDatafeeds->andWhere(['not in', 'datafeedid', $fileDatafeedIds])->all();
                 foreach ($notExist as $missingDatafeed) {
-                    $this->datafeedRepo->update($missingDatafeed, ['status' => '0']);
+                    $this->datafeedRepo->update($missingDatafeed['id'], ['status' => '0']);
                 }
             } else {
-                // No existing records, just create all
                 rewind($file);
                 fgetcsv($file); // Skip headers
                 while (($row = fgetcsv($file)) !== false) {
@@ -155,7 +163,6 @@ class DatafeedService
     public function createFromFile(ActiveRecord $client, string $filePath): void
     {
         try {
-            $data = [];
             $initialDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
 
             if (!$initialDataVersion) {
@@ -242,7 +249,7 @@ class DatafeedService
     public function transform(string $dataPath, ActiveRecord $client): string
     {
         try {
-            $tempFilePath = __DIR__.'/../../runtime/cache/'.uniqid().'.csv';
+            $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
             $clientInfo = json_decode($client['data'], true);
 
             $select = [
@@ -313,7 +320,7 @@ class DatafeedService
 
         try {
             $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter);
-            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $this->destPath, uniqid(), $client['name'], $platform['name']);
+            $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $this->resultPath, uniqid(), $client['name'], $platform['name']);
 
             $file = fopen($resultPath, 'w');
             $platformInfo = json_decode($platform['data'], true);
@@ -367,7 +374,7 @@ class DatafeedService
     public function readXml(string $filePath): string
     {
         $xml = new SimpleXMLElement($filePath, 0, true);
-        $outputCsvPath = __DIR__.'/../../runtime/cache/'.uniqid().'.csv';
+        $outputCsvPath = $this->cachePath.'/'.uniqid().'.csv';
         $csvFile = fopen($outputCsvPath, 'w');
 
         $headerWritten = false;
@@ -404,7 +411,7 @@ class DatafeedService
     {
         // Open the original file
         $file = fopen($filePath, 'r');
-        $tempFilePath = __DIR__.'/../../runtime/cache/'.uniqid().'.csv';
+        $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
 
         // Detect BOM
         $bom = fread($file, 3);  // Read first 3 bytes
