@@ -194,7 +194,6 @@ class DatafeedService
             $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
 
             unlink($processedDataPath);
-            unlink($filePath);
 
             return;
         } catch (Throwable $e) {
