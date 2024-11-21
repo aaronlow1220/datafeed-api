@@ -40,8 +40,8 @@ class DatafeedService
      */
     public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo)
     {
-        $this->resultPath = __DIR__.'/../../runtime/files/result';
-        $this->cachePath = __DIR__.'/../../runtime/cache';
+        $this->resultPath = __DIR__ . '/../../runtime/files/result';
+        $this->cachePath = __DIR__ . '/../../runtime/cache';
     }
 
     /**
@@ -248,7 +248,7 @@ class DatafeedService
     public function transform(string $dataPath, ActiveRecord $client): string
     {
         try {
-            $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
+            $tempFilePath = $this->cachePath . '/' . uniqid() . '.csv';
             $clientInfo = json_decode($client['data'], true);
 
             $select = [
@@ -373,7 +373,7 @@ class DatafeedService
     public function readXml(string $filePath): string
     {
         $xml = new SimpleXMLElement($filePath, 0, true);
-        $outputCsvPath = $this->cachePath.'/'.uniqid().'.csv';
+        $outputCsvPath = $this->cachePath . '/' . uniqid() . '.csv';
         $csvFile = fopen($outputCsvPath, 'w');
 
         $headerWritten = false;
@@ -410,7 +410,7 @@ class DatafeedService
     {
         // Open the original file
         $file = fopen($filePath, 'r');
-        $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
+        $tempFilePath = $this->cachePath . '/' . uniqid() . '.csv';
 
         // Detect BOM
         $bom = fread($file, 3);  // Read first 3 bytes
@@ -465,7 +465,7 @@ class DatafeedService
         foreach ($data as $key => $value) {
             $linkParamConnector = strpos($data[$key]['link'], '?') ? '&' : '?';
             if (!empty($data[$key]['link'])) {
-                $data[$key]['link'] = $value['link'].$linkParamConnector.$utmParam;
+                $data[$key]['link'] = $value['link'] . $linkParamConnector . $utmParam;
             }
         }
 
