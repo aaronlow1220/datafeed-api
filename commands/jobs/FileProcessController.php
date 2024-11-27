@@ -6,8 +6,8 @@ use app\components\version\DataVersionRepo;
 use app\jobs\FileProcessJob;
 use app\jobs\JobFactory;
 use yii\console\Controller;
-use yii\queue\Queue;
 use yii\helpers\BaseConsole;
+use yii\queue\Queue;
 
 /**
  * This controller is used to update feed in database from file.

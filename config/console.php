@@ -65,7 +65,7 @@ $config = [
         ],
         'genapi' => [
             'class' => 'AtelliTech\Yii2\Utils\ApiGeneratorController',
-            'db' => 'db', // db comopnent id default: db
+            'db' => 'db',
         ],
         'container' => [
             'class' => 'AtelliTech\Yii2\Utils\ContainerController',
