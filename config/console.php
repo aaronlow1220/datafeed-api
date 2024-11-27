@@ -9,6 +9,7 @@ $config = [
     'basePath' => dirname(__DIR__),
     'timeZone' => 'Asia/Taipei',
     'bootstrap' => ['log', 'queue'],
+    'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@v1' => '@app/modules/v1',
     ],
@@ -82,12 +83,6 @@ $config = [
             'migrationNamespaces' => [
                 'yii\queue\db\migrations',
             ],
-        ],
-        'feedfile' => [
-            'class' => 'app\commands\FeedFileController',
-        ],
-        'fileprocess' => [
-            'class' => 'app\commands\jobs\FileProcessController',
         ],
     ],
 ];
