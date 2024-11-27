@@ -7,14 +7,13 @@ use Throwable;
 use app\components\FileEntity;
 use app\components\client\ClientRepo;
 use app\components\core\FileService;
-use app\components\datafeed\DatafeedService;
+use app\components\version\DataVersionRepo;
 use v1\components\ActiveApiController;
 use v1\components\file\FileSearchService;
 use yii\base\Module;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
-use yii\web\Response;
 use yii\web\UploadedFile;
 
 /**
@@ -63,13 +62,13 @@ class FileController extends ActiveApiController
      * @param string $id
      * @param Module $module
      * @param FileService $fileService
-     * @param DatafeedService $datafeedService
      * @param ClientRepo $clientRepo
      * @param FileSearchService $fileSearchService
+     * @param DataVersionRepo $dataVersionRepo
      * @param array<string, mixed> $config
      * @return void
      */
-    public function __construct($id, $module, private FileService $fileService, private DatafeedService $datafeedService, private ClientRepo $clientRepo, private FileSearchService $fileSearchService, $config = [])
+    public function __construct($id, $module, private FileService $fileService, private ClientRepo $clientRepo, private FileSearchService $fileSearchService, private DataVersionRepo $dataVersionRepo, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -144,8 +143,35 @@ class FileController extends ActiveApiController
             $file = FileEntity::createByUploadedFile($uploadFile);
 
             $client = $this->clientRepo->findOne($id);
+
+            $initialVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
+
+            if (!$initialVersion) {
+                $dataVersion = [
+                    'filename' => '',
+                    'hash' => '',
+                    'client_id' => $client['id'],
+                    'version' => 0,
+                ];
+                $initialVersion = $this->dataVersionRepo->create($dataVersion);
+            }
+
             $upload = $this->fileService->upload($file);
-            $this->datafeedService->createFromFile($client, $upload['path']);
+
+            $checkVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
+
+            if ($initialVersion['version'] !== $checkVersion['version']) {
+                throw new HttpException(400, 'Version mismatch');
+            }
+
+            $dataVersion = [
+                'filename' => $upload['filename'],
+                'hash' => md5_file($upload['path']),
+                'client_id' => $client['id'],
+                'version' => $checkVersion['version'] + 1,
+                'status' => '2',
+            ];
+            $finalDataVersion = $this->dataVersionRepo->update($checkVersion, $dataVersion);
 
             return $upload;
         } catch (Throwable $e) {

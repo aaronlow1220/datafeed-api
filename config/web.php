@@ -10,7 +10,7 @@ $config = [
     'id' => 'datafeed-api-v1',
     'basePath' => dirname(__DIR__),
     'timeZone' => 'Asia/Taipei',
-    'bootstrap' => ['log', 'v1'],
+    'bootstrap' => ['log', 'v1', 'queue'],
     'aliases' => [
         '@v1' => '@app/modules/v1',
     ],
@@ -41,6 +41,13 @@ $config = [
             'username' => $params['db']['username'],
             'password' => $params['db']['password'],
             'charset' => 'utf8mb4',
+        ],
+        'queue' => [
+            'class' => '\yii\queue\db\Queue',
+            'db' => 'db',
+            'tableName' => 'queue',
+            'channel' => 'default',
+            'mutex' => '\yii\mutex\MysqlMutex',
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',

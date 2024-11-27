@@ -12,7 +12,6 @@ use function Flow\ETL\DSL\to_array;
 
 use SimpleXMLElement;
 use Throwable;
-use app\components\version\DataVersionRepo;
 use yii\db\ActiveRecord;
 
 /**
@@ -36,169 +35,11 @@ class DatafeedService
      * DatasetService constructor.
      *
      * @param DatafeedRepo $datafeedRepo
-     * @param DataVersionRepo $dataVersionRepo
      */
-    public function __construct(private DatafeedRepo $datafeedRepo, private DataVersionRepo $dataVersionRepo)
+    public function __construct(private DatafeedRepo $datafeedRepo)
     {
-        $this->resultPath = __DIR__ . '/../../runtime/files/result';
-        $this->cachePath = __DIR__ . '/../../runtime/cache';
-    }
-
-    /**
-     * Create datafeed.
-     *
-     * @param ActiveRecord $client
-     * @param string $filePath
-     *
-     * @return string
-     */
-    public function createOrUpdateWithFile(ActiveRecord $client, string $filePath): string
-    {
-        set_time_limit(600);
-        $file = null;
-        $transaction = $this->datafeedRepo->getDb()->beginTransaction();
-
-        try {
-            $clientDatafeeds = $this->datafeedRepo->findByClientId($client['id']);
-            $hasExistingDatafeeds = $clientDatafeeds->exists();
-            $file = fopen($filePath, 'r');
-            $headers = fgetcsv($file);
-            $processedDatafeedIds = [];
-
-            // First pass: Read all datafeedids from file into a separate array
-            $fileDatafeedIds = [];
-            while (($row = fgetcsv($file)) !== false) {
-                $record = array_combine($headers, $row);
-                $fileDatafeedIds[] = $record['datafeedid'];
-            }
-
-            if ($hasExistingDatafeeds) {
-                // Process database records in batches
-                foreach ($clientDatafeeds->batch(6000) as $datafeeds) {
-                    $existingDatafeedMap = [];
-                    foreach ($datafeeds as $datafeed) {
-                        $existingDatafeedMap[$datafeed['datafeedid']] = $datafeed;
-                    }
-
-                    // Only process file rows for datafeedids that exist in current batch
-                    rewind($file);
-                    fgetcsv($file);
-                    while (($row = fgetcsv($file)) !== false) {
-                        $record = array_combine($headers, $row);
-                        $record['status'] = '1';
-                        $record['client_id'] = strval($client['id']);
-
-                        // Skip if we've already processed this datafeedid
-                        if (in_array($record['datafeedid'], $processedDatafeedIds)) {
-                            continue;
-                        }
-
-                        // Only process if this datafeedid exists in current batch
-                        if (isset($existingDatafeedMap[$record['datafeedid']])) {
-                            $existingRecord = $existingDatafeedMap[$record['datafeedid']];
-                            $isDifferent = $record != array_intersect_key($existingRecord->attributes, $record);
-
-                            if ($isDifferent) {
-                                $feed = $this->datafeedRepo->update($existingRecord, $record);
-                            }
-                            $processedDatafeedIds[] = $record['datafeedid'];
-                        }
-                    }
-                }
-
-                // Second pass: Create new records that weren't in database
-                rewind($file);
-                fgetcsv($file);
-                while (($row = fgetcsv($file)) !== false) {
-                    $record = array_combine($headers, $row);
-
-                    // Only create if we haven't processed this id yet
-                    if (!in_array($record['datafeedid'], $processedDatafeedIds)) {
-                        $record['status'] = '1';
-                        $record['client_id'] = strval($client['id']);
-                        $feed = $this->datafeedRepo->create($record);
-                        $processedDatafeedIds[] = $record['datafeedid'];
-                    }
-                }
-
-                // Deactivate missing datafeeds
-                $notExist = $clientDatafeeds->andWhere(['not in', 'datafeedid', $fileDatafeedIds])->all();
-                foreach ($notExist as $missingDatafeed) {
-                    $this->datafeedRepo->update($missingDatafeed['id'], ['status' => '0']);
-                }
-            } else {
-                rewind($file);
-                fgetcsv($file); // Skip headers
-                while (($row = fgetcsv($file)) !== false) {
-                    $record = array_combine($headers, $row);
-                    $record['status'] = '1';
-                    $record['client_id'] = strval($client['id']);
-                    $feed = $this->datafeedRepo->create($record);
-                    $processedDatafeedIds[] = $record['datafeedid'];
-                }
-            }
-
-            $transaction->commit();
-            fclose($file);
-
-            return $filePath;
-        } catch (Throwable $e) {
-            $transaction->rollBack();
-            if ($file) {
-                fclose($file);
-            }
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Create datafeed from file.
-     *
-     * @param ActiveRecord $client
-     * @param string $filePath
-     *
-     * @return void
-     */
-    public function createFromFile(ActiveRecord $client, string $filePath): void
-    {
-        try {
-            $initialDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
-
-            if (!$initialDataVersion) {
-                $dataVersion = [
-                    'filename' => basename($filePath),
-                    'hash' => hash_file('md5', $filePath),
-                    'client_id' => $client['id'],
-                    'version' => 0,
-                ];
-                $initialDataVersion = $this->dataVersionRepo->create($dataVersion);
-            }
-
-            $processedDataPath = $this->transformDataToFile($filePath, $client);
-
-            $finalDataVersion = $this->dataVersionRepo->findByClientId($client['id'])->one();
-
-            if ($initialDataVersion['version'] !== $finalDataVersion['version']) {
-                throw new Exception('Data version not match', 400);
-            }
-
-            $datafeed = $this->createOrUpdateWithFile($client, $processedDataPath);
-
-            $dataVersion = [
-                'filename' => basename($filePath),
-                'hash' => hash_file('md5', $filePath),
-                'version' => $finalDataVersion['version'] + 1,
-            ];
-
-            $this->dataVersionRepo->update($finalDataVersion, $dataVersion);
-
-            unlink($processedDataPath);
-
-            return;
-        } catch (Throwable $e) {
-            throw $e;
-        }
+        $this->resultPath = __DIR__.'/../../runtime/files/result';
+        $this->cachePath = __DIR__.'/../../runtime/cache';
     }
 
     /**
@@ -248,7 +89,7 @@ class DatafeedService
     public function transform(string $dataPath, ActiveRecord $client): string
     {
         try {
-            $tempFilePath = $this->cachePath . '/' . uniqid() . '.csv';
+            $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
             $clientInfo = json_decode($client['data'], true);
 
             $select = [
@@ -373,7 +214,7 @@ class DatafeedService
     public function readXml(string $filePath): string
     {
         $xml = new SimpleXMLElement($filePath, 0, true);
-        $outputCsvPath = $this->cachePath . '/' . uniqid() . '.csv';
+        $outputCsvPath = $this->cachePath.'/'.uniqid().'.csv';
         $csvFile = fopen($outputCsvPath, 'w');
 
         $headerWritten = false;
@@ -410,7 +251,7 @@ class DatafeedService
     {
         // Open the original file
         $file = fopen($filePath, 'r');
-        $tempFilePath = $this->cachePath . '/' . uniqid() . '.csv';
+        $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
 
         // Detect BOM
         $bom = fread($file, 3);  // Read first 3 bytes
@@ -465,7 +306,7 @@ class DatafeedService
         foreach ($data as $key => $value) {
             $linkParamConnector = strpos($data[$key]['link'], '?') ? '&' : '?';
             if (!empty($data[$key]['link'])) {
-                $data[$key]['link'] = $value['link'] . $linkParamConnector . $utmParam;
+                $data[$key]['link'] = $value['link'].$linkParamConnector.$utmParam;
             }
         }
 

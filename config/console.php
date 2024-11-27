@@ -8,7 +8,7 @@ $config = [
     'id' => 'datafeed-api-v1',
     'basePath' => dirname(__DIR__),
     'timeZone' => 'Asia/Taipei',
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'queue'],
     'aliases' => [
         '@v1' => '@app/modules/v1',
     ],
@@ -33,6 +33,13 @@ $config = [
         //     'enableAutoLogin' => false,
         //     'enableSession' => false,
         // ],
+        'queue' => [
+            'class' => '\yii\queue\db\Queue',
+            'db' => 'db',
+            'tableName' => 'queue',
+            'channel' => 'default',
+            'mutex' => '\yii\mutex\MysqlMutex',
+        ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -67,8 +74,20 @@ $config = [
                 ['v1\components', '@v1/components'],
             ],
         ],
-        'updatefeed' => [
-            'class' => 'app\commands\UpdateFeedController',
+        'migrate' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'migrationPath' => [
+                '@app/migrations',
+            ],
+            'migrationNamespaces' => [
+                'yii\queue\db\migrations',
+            ],
+        ],
+        'feedfile' => [
+            'class' => 'app\commands\FeedFileController',
+        ],
+        'fileprocess' => [
+            'class' => 'app\commands\jobs\FileProcessController',
         ],
     ],
 ];

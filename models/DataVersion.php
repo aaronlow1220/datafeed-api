@@ -13,11 +13,13 @@ use yii\db\ActiveRecord;
  *   schema="DataVersion",
  *   title="DataVersion Model",
  *   description="This model is used to access data_version data",
- *   required={"id", "client_id", "hash", "created_by", "created_at", "updated_by", "updated_at"},
+ *   required={"id", "client_id", "filename", "hash", "version", "status", "created_by", "created_at", "updated_by", "updated_at"},
  *   @OA\Property(property="id", type="integer", description="Auto increment id #autoIncrement #pk"),
  *   @OA\Property(property="client_id", type="integer", description="Client id"),
- *   @OA\Property(property="version", type="integer", description="Version"),
+ *   @OA\Property(property="filename", type="string", description="File name", maxLength=255),
  *   @OA\Property(property="hash", type="string", description="Data hash", maxLength=255),
+ *   @OA\Property(property="version", type="integer", description="Version"),
+ *   @OA\Property(property="status", type="string", description="0:failed 1:success 2:pending 3:processing, ref:taxonomies.value of type name[data_version_status]", default="2", enum={"0", "1", "2", "3"}),
  *   @OA\Property(property="created_by", type="integer", description="ref: > user.id"),
  *   @OA\Property(property="created_at", type="integer", description="unixtime"),
  *   @OA\Property(property="updated_by", type="integer", description="ref: > user.id"),
@@ -28,6 +30,10 @@ use yii\db\ActiveRecord;
  */
 class DataVersion extends ActiveRecord
 {
+    use TaxonomyTrait;
+    use UserCreatorTrait;
+    use UserUpdaterTrait;
+
     /**
      * Return table name of data_version.
      *
@@ -68,9 +74,11 @@ class DataVersion extends ActiveRecord
     public function rules()
     {
         return [
-            [['filename', 'hash'], 'trim'],
+            [['filename', 'hash', 'status'], 'trim'],
             [['id', 'client_id', 'version', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['filename', 'hash'], 'string'],
+            [['filename', 'hash', 'status'], 'string'],
+            [['status'], 'in', 'range' => ['0', '1', '2', '3']],
+            [['status'], 'default', 'value' => '2'],
         ];
     }
 
@@ -94,7 +102,17 @@ class DataVersion extends ActiveRecord
      */
     public function extraFields()
     {
-        return ['client'];
+        return ['client', 'statusLabel'];
+    }
+
+    /**
+     * Get status label.
+     *
+     * @return ActiveQuery
+     */
+    public function getStatusLabel(): ActiveQuery
+    {
+        return $this->getTaxonomy('data_version_status', 'status');
     }
 
     /**

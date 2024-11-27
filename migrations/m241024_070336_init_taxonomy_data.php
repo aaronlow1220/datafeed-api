@@ -26,6 +26,7 @@ class m241024_070336_init_taxonomy_data extends Migration
             ['datafeed_status', 'Datafeed Status', time(), time(), 0, 0],
             ['user_status', 'User Status', time(), time(), 0, 0],
             ['feed_file_status', 'Feed File Status', time(), time(), 0, 0],
+            ['data_version_status', 'Data Version Status', time(), time(), 0, 0],
         ];
 
         $this->batchInsert($this->typeTable, ['name', 'description', 'created_at', 'updated_at', 'created_by', 'updated_by'], $types);
@@ -42,6 +43,12 @@ class m241024_070336_init_taxonomy_data extends Migration
             [ // feed_file_status
                 ['停用', '0', 1, '0', '', time(), time(), 0, 0],
                 ['啟用', '1', 1, '0', '', time(), time(), 0, 0],
+            ],
+            [ // data_version_status
+                ['失敗', '0', 1, '0', '', time(), time(), 0, 0],
+                ['成功', '1', 1, '0', '', time(), time(), 0, 0],
+                ['待處理', '1', 1, '0', '', time(), time(), 0, 0],
+                ['處理中', '1', 1, '0', '', time(), time(), 0, 0],
             ],
         ];
 
@@ -68,19 +75,4 @@ class m241024_070336_init_taxonomy_data extends Migration
 
         return false;
     }
-
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m241024_070336_init_taxonomy_data cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

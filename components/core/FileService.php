@@ -42,7 +42,8 @@ final class FileService
             throw new Exception("Create directory({$this->destPath}), failed");
         }
 
-        $dest = sprintf('%s/%s_%s_feed.%s', $this->destPath, uniqid(), $file->getName(), $file->getExtension());
+        $fileName = uniqid().'_'.$file->getName().'_feed.'.$file->getExtension();
+        $dest = sprintf('%s/%s', $this->destPath, $fileName);
         if (!copy($file->getFile(), $dest)) {
             throw new Exception('Store file, failed');
         }
@@ -51,7 +52,7 @@ final class FileService
             return $this->fileRepo->create([
                 'mime' => $file->getMimeType(),
                 'extension' => $file->getExtension(),
-                'filename' => $file->getName(),
+                'filename' => $fileName,
                 'path' => $dest,
                 'size' => $file->getSize(),
             ]);

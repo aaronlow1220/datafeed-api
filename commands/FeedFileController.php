@@ -2,7 +2,7 @@
 
 namespace app\commands;
 
-use Exception;
+use Throwable;
 use app\components\client\ClientRepo;
 use app\components\core\FileRepo;
 use app\components\datafeed\DatafeedService;
@@ -16,7 +16,7 @@ use yii\helpers\BaseConsole;
  *
  * @author Aaron Low <aaron.low@atelli.ai>
  */
-class UpdateFeedController extends Controller
+class FeedFileController extends Controller
 {
     /**
      * @var string
@@ -96,7 +96,7 @@ class UpdateFeedController extends Controller
                 echo 'Feed file: '.$feedFile['id'].' has been updated'."\n";
             }
             echo $this->ansiFormat("Successfully update all feeds\n", BaseConsole::BG_GREEN);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             echo 'Error: '.$e->getMessage()."\n";
         }
     }
@@ -137,7 +137,7 @@ class UpdateFeedController extends Controller
             $feedFile = $feedFileRepo->update($feedFile, $feedFileParams);
 
             echo $this->ansiFormat('Successfully update feed:'.$feedFile['id']."\n", BaseConsole::BG_GREEN);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             echo 'Error: '.$e->getMessage()."\n";
         }
     }
