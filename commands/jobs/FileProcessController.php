@@ -7,6 +7,7 @@ use app\jobs\FileProcessJob;
 use app\jobs\JobFactory;
 use yii\console\Controller;
 use yii\queue\Queue;
+use yii\helpers\BaseConsole;
 
 /**
  * This controller is used to update feed in database from file.
@@ -30,7 +31,7 @@ class FileProcessController extends Controller
     {
         $data = $this->dataVersionRepo->find()->where(['status' => '2'])->all();
 
-        echo 'Processing '.count($data)." files\n";
+        echo 'Pushing '.count($data)." files to queue\n";
 
         foreach ($data as $item) {
             $job = JobFactory::createDatafeedJob([
@@ -41,5 +42,7 @@ class FileProcessController extends Controller
 
             $queue->push($job);
         }
+
+        echo $this->ansiFormat("All files are pushed to queue\n", BaseConsole::BG_GREEN);
     }
 }
