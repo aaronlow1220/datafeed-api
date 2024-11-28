@@ -103,7 +103,6 @@ class FileProcessJob extends BaseObject implements JobInterface
             }
             $transaction->commit();
             fclose($file);
-            var_dump($transformedFilePath);
             unlink($transformedFilePath);
             $this->dataVersionRepo->update($dataVersion, ['status' => '1']);
 

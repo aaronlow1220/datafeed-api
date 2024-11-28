@@ -182,7 +182,7 @@ class DatafeedController extends ActiveApiController
     {
         $params = Yii::$app->request->get();
         unset($params['id'], $params['platformid']);
-        $filter = count($params) ? json_encode($params, JSON_UNESCAPED_UNICODE) : '{}';
+        $filter = count($params) ? json_encode($params, JSON_UNESCAPED_UNICODE) : '{"filter":{}}';
 
         try {
             $client = $this->clientRepo->findOne($id);
