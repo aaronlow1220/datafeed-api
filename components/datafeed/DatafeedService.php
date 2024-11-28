@@ -12,6 +12,7 @@ use function Flow\ETL\DSL\to_array;
 
 use SimpleXMLElement;
 use Throwable;
+use yii\data\ActiveDataFilter;
 use yii\db\ActiveRecord;
 
 /**
@@ -158,8 +159,17 @@ class DatafeedService
     {
         $filter = json_decode($feedFile['filter'], true);
 
+        $filterModel = new ActiveDataFilter([
+            'searchModel' => 'v1\models\validator\DatafeedFilter',
+        ]);
+
+        $filterCondition = null;
+        if ($filterModel->load($filter)) {
+            $filterCondition = $filterModel->build();
+        }
+
         try {
-            $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filter);
+            $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filterCondition);
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $this->resultPath, uniqid(), $client['name'], $platform['name']);
 
             $file = fopen($resultPath, 'w');
