@@ -103,6 +103,8 @@ class FileProcessJob extends BaseObject implements JobInterface
             }
             $transaction->commit();
             fclose($file);
+            var_dump($transformedFilePath);
+            unlink($transformedFilePath);
             $this->dataVersionRepo->update($dataVersion, ['status' => '1']);
 
             return;
@@ -114,6 +116,7 @@ class FileProcessJob extends BaseObject implements JobInterface
             $transaction->rollBack();
             if ($file) {
                 fclose($file);
+                unlink($transformedFilePath);
             }
 
             throw $e;

@@ -40,7 +40,7 @@ class DatafeedService
     public function __construct(private DatafeedRepo $datafeedRepo)
     {
         $this->resultPath = __DIR__.'/../../runtime/files/result';
-        $this->cachePath = __DIR__.'/../../runtime/cache';
+        $this->cachePath = __DIR__.'/../../runtime/files/cache';
     }
 
     /**
