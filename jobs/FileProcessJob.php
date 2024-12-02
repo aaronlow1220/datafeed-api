@@ -53,6 +53,7 @@ class FileProcessJob extends BaseObject implements JobInterface
     public function execute($queue)
     {
         ini_set('memory_limit', '1000M');
+        $version = date('YmdHis');
         $file = null;
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
         $dataVersion = $this->dataVersionRepo->find()->where(['client_id' => $this->clientId])->one();
@@ -83,13 +84,10 @@ class FileProcessJob extends BaseObject implements JobInterface
                 foreach ($clientDatafeeds as $datafeed) {
                     $record = $fileDatafeeds[$datafeed['datafeedid']] ?? null;
                     if ($record) {
-                        // check if the data is the same
-                        $isDifferent = $record != array_intersect_key($datafeed['attributes'], $record);
-                        if ($isDifferent || '0' === $datafeed['status']) {
-                            $record['status'] = '1';
-                            $record['client_id'] = strval($this->clientId);
-                            $this->datafeedRepo->update($datafeed['id'], $record);
-                        }
+                        $record['status'] = '1';
+                        $record['client_id'] = strval($this->clientId);
+                        $record['version'] = $version;
+                        $this->datafeedRepo->update($datafeed['id'], $record);
                     } else {
                         $this->datafeedRepo->update($datafeed['id'], ['status' => '0']);
                     }
@@ -98,9 +96,18 @@ class FileProcessJob extends BaseObject implements JobInterface
                 foreach ($fileDatafeeds as $record) {
                     $record['status'] = '1';
                     $record['client_id'] = strval($this->clientId);
+                    $record['version'] = $version;
                     $this->datafeedRepo->create($record);
                 }
             }
+
+            $validDatafeeds = $this->datafeedRepo->find()->where(['version' => $version, 'client_id' => $this->clientId]);
+            $validateCount = $validDatafeeds->count();
+
+            if($validateCount !== count($fileDatafeeds)) {
+                throw new Exception('Datafeed count mismatch');
+            }
+
             $transaction->commit();
             fclose($file);
             unlink($transformedFilePath);

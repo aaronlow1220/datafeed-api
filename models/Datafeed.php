@@ -33,7 +33,8 @@ use yii\db\ActiveRecord;
  *   @OA\Property(property="custom_label_1", type="string", description="Custom label 1", maxLength=255),
  *   @OA\Property(property="custom_label_2", type="string", description="Custom label 2", maxLength=255),
  *   @OA\Property(property="custom_label_3", type="string", description="Custom label 3", maxLength=255),
- *   @OA\Property(property="custom_label_4", type="string", description="Custom label 4", maxLength=255),
+ *   @OA\Property(property="custom_label_4", type="string", description="Custom label 4", maxLength=14),
+ *   @OA\Property(property="version", type="string", description="Version date:YmdHis", maxLength=255),
  *   @OA\Property(property="status", type="string", description="1: active 2:inactive, ref:taxonomies.value of type name[datafeed_status]", default="1", enum={"1", "2"}),
  *   @OA\Property(property="created_by", type="integer", description="ref: > user.id"),
  *   @OA\Property(property="created_at", type="integer", description="unixtime"),
@@ -89,9 +90,9 @@ class Datafeed extends ActiveRecord
     public function rules()
     {
         return [
-            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'status'], 'trim'],
+            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'version', 'status'], 'trim'],
             [['id', 'client_id', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'status'], 'string'],
+            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'version', 'status'], 'string'],
             [['status'], 'in', 'range' => ['0', '1']],
             [['status'], 'default', 'value' => '1'],
         ];
