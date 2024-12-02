@@ -104,7 +104,7 @@ class FileProcessJob extends BaseObject implements JobInterface
             $validDatafeeds = $this->datafeedRepo->find()->where(['version' => $version, 'client_id' => $this->clientId]);
             $validateCount = $validDatafeeds->count();
 
-            if($validateCount !== count($fileDatafeeds)) {
+            if ($validateCount !== count($fileDatafeeds)) {
                 throw new Exception('Datafeed count mismatch');
             }
 
