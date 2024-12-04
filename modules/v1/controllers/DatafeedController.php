@@ -168,7 +168,7 @@ class DatafeedController extends ActiveApiController
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
-     *         @OA\JsonContent(type="object", ref="#/components/schemas/Datafeed")
+     *         @OA\JsonContent(type="object", ref="#/components/schemas/File")
      *    )
      * )
      *
