@@ -108,6 +108,8 @@ class FileProcessJob extends BaseObject implements JobInterface
                 throw new Exception('Datafeed count mismatch');
             }
 
+            echo $validateCount." row(s) processed\n";
+
             $transaction->commit();
             fclose($file);
             unlink($transformedFilePath);
