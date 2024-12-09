@@ -3,8 +3,8 @@
 namespace app\commands\jobs;
 
 use app\components\version\DataVersionRepo;
-use app\jobs\FileProcessJob;
 use app\jobs\JobFactory;
+use yii\base\Module;
 use yii\console\Controller;
 use yii\helpers\BaseConsole;
 use yii\queue\Queue;
@@ -21,12 +21,27 @@ class FileProcessController extends Controller
      */
     private $originalFilePath;
 
-    public function __construct($id, $module, private DataVersionRepo $dataVersionRepo, private FileProcessJob $fileProcessJob, $config = [])
+    /**
+     * Summary of __construct.
+     *
+     * @param string $id
+     * @param Module $module
+     * @param DataVersionRepo $dataVersionRepo
+     * @param array<string, mixed> $config
+     * @return void
+     */
+    public function __construct($id, $module, private DataVersionRepo $dataVersionRepo, $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->originalFilePath = __DIR__.'/../../runtime/files/original';
     }
 
+    /**
+     * Push all files to queue.
+     *
+     * @param Queue $queue
+     * @return void
+     */
     public function actionIndex(Queue $queue)
     {
         $data = $this->dataVersionRepo->find()->where(['status' => '2'])->all();

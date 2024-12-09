@@ -9,6 +9,7 @@ use app\components\datafeed\DatafeedService;
 use app\components\datafeed\FeedFileRepo;
 use app\components\platform\PlatformRepo;
 use yii\console\Controller;
+use yii\db\ActiveRecord;
 use yii\helpers\BaseConsole;
 
 /**
@@ -66,12 +67,21 @@ class FeedFileController extends Controller
             $client = null;
             $platform = null;
             foreach ($feedFiles as $feedFile) {
+                /**
+                 * @var ActiveRecord $feedFile
+                 */
                 echo 'Processing feed file: '.$feedFile['id']."\n";
 
                 if (null == $client || $client['id'] !== $feedFile['client_id']) {
+                    /**
+                     * @var ActiveRecord $client
+                     */
                     $client = $clientRepo->find()->where(['id' => $feedFile['client_id']])->one();
                 }
                 if (null == $platform || $platform['id'] !== $feedFile['platform_id']) {
+                    /**
+                     * @var ActiveRecord $platform
+                     */
                     $platform = $platformRepo->find()->where(['id' => $feedFile['platform_id']])->one();
                 }
 
@@ -118,6 +128,10 @@ class FeedFileController extends Controller
             $client = $clientRepo->find()->where(['id' => $feedFile['client_id']])->one();
             $platform = $platformRepo->find()->where(['id' => $feedFile['client_id']])->one();
 
+            /**
+             * @var ActiveRecord $client
+             * @var ActiveRecord $platform
+             */
             $resultPath = $datafeedService->export($platform, $client, $feedFile);
 
             $data = [

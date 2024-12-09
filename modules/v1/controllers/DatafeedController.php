@@ -207,6 +207,9 @@ class DatafeedController extends ActiveApiController
             $files = null;
 
             foreach ($feedFiles as $feedFile) {
+                /**
+                 * @var ActiveRecord $feedFile
+                 */
                 $resultPath = $this->datafeedService->export($platform, $client, $feedFile);
 
                 $data = [
