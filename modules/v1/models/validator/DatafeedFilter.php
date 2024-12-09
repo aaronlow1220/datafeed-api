@@ -69,7 +69,7 @@ class DatafeedFilter extends Model
     public function rules()
     {
         return [
-            [['title', 'description', 'condition', 'google_product_category', 'brand', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4'], 'string'],
+            [['title', 'description', 'condition', 'google_product_category', 'brand', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4'], 'safe'],
         ];
     }
 }

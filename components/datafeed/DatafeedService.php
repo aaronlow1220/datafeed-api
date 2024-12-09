@@ -170,6 +170,7 @@ class DatafeedService
 
         try {
             $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filterCondition);
+
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $this->resultPath, uniqid(), $client['name'], $platform['name']);
 
             $file = fopen($resultPath, 'w');
@@ -313,6 +314,9 @@ class DatafeedService
      */
     public function addUtmParameters(array $data, string $utmParam): array
     {
+        // check if query starts with '?', if yes, remove it
+        $utmParam = ltrim($utmParam, " \n\r\t\v\x00?");
+
         foreach ($data as $key => $value) {
             $linkParamConnector = strpos($data[$key]['link'], '?') ? '&' : '?';
             if (!empty($data[$key]['link'])) {

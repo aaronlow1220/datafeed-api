@@ -13,6 +13,7 @@ use app\components\platform\PlatformRepo;
 use v1\components\ActiveApiController;
 use v1\components\datafeed\DatafeedSearchService;
 use yii\base\Module;
+use yii\data\ActiveDataFilter;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
@@ -176,42 +177,58 @@ class DatafeedController extends ActiveApiController
      *
      * @param int $id
      * @param int $platformid
-     * @return ActiveRecord
+     * @return ActiveRecord[]
      */
-    public function actionExport(int $id, int $platformid): ActiveRecord
+    public function actionExport(int $id, int $platformid): array
     {
         $params = Yii::$app->request->get();
         unset($params['id'], $params['platformid']);
-        $filter = count($params) ? json_encode($params, JSON_UNESCAPED_UNICODE) : '{"filter":{}}';
+
+        $filterModel = new ActiveDataFilter([
+            'searchModel' => 'v1\models\validator\DatafeedFilter',
+        ]);
+
+        $filterCondition = [
+            'filter' => (object) [],
+        ];
+        if ($filterModel->load($params)) {
+            $filterCondition = $params;
+        }
 
         try {
             $client = $this->clientRepo->findOne($id);
             $platform = $this->platformRepo->findOne($platformid);
-            $feedFile = $this->feedFileRepo->findOne(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter]);
+            $feedFiles = $this->feedFileRepo->find()->where(['client_id' => $id, 'platform_id' => $platformid, 'filter' => json_encode($filterCondition)])->all();
 
-            if (!$feedFile) {
-                $feedFile = $this->feedFileRepo->create(['client_id' => $id, 'platform_id' => $platformid, 'filter' => $filter]);
+            if (!$feedFiles) {
+                throw new HttpException(404, 'Feed file not found');
             }
 
-            $resultPath = $this->datafeedService->export($platform, $client, $feedFile);
+            $files = null;
 
-            $data = [
-                'mime' => 'text/csv',
-                'extension' => 'csv',
-                'filename' => basename($resultPath),
-                'path' => $resultPath,
-                'size' => filesize($resultPath),
-            ];
+            foreach ($feedFiles as $feedFile) {
+                $resultPath = $this->datafeedService->export($platform, $client, $feedFile);
 
-            $file = $this->fileRepo->create($data);
+                $data = [
+                    'mime' => 'text/csv',
+                    'extension' => 'csv',
+                    'filename' => basename($resultPath),
+                    'path' => $resultPath,
+                    'size' => filesize($resultPath),
+                ];
 
-            $feedFileParams = [
-                'file_id' => $file['id'],
-            ];
+                $file = $this->fileRepo->create($data);
 
-            $feedFile = $this->feedFileRepo->update($feedFile, $feedFileParams);
+                $files[] = $file;
 
-            return $file;
+                $feedFileParams = [
+                    'file_id' => $file['id'],
+                ];
+
+                $feedFile = $this->feedFileRepo->update($feedFile, $feedFileParams);
+            }
+
+            return $files;
         } catch (Throwable $e) {
             throw $e;
         }

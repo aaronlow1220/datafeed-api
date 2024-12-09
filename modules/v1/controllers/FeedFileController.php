@@ -9,8 +9,10 @@ use app\components\core\FileRepo;
 use app\components\datafeed\FeedFileRepo;
 use app\modules\v1\Module;
 use v1\components\ActiveApiController;
+use v1\components\datafeed\FeedFileCreateService;
 use v1\components\datafeed\FeedFileSearchService;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveRecord;
 use yii\web\HttpException;
 use yii\web\Response;
 
@@ -94,34 +96,6 @@ use yii\web\Response;
  *     )
  * )
  *
- * @OA\Post(
- *     path="/feed-file",
- *     summary="Create",
- *     description="Create a record of FeedFile",
- *     operationId="createFeedFile",
- *     tags={"FeedFile"},
- *     @OA\RequestBody(
- *         description="FeedFile object that needs to be added",
- *         required=true,
- *         @OA\MediaType(
- *             mediaType="application/json",
- *             @OA\Schema(
- *                  @OA\Property(property="client_id", ref="#/components/schemas/FeedFile/properties/client_id"),
- *                  @OA\Property(property="platform_id", ref="#/components/schemas/FeedFile/properties/platform_id"),
- *                  @OA\Property(property="file_id", ref="#/components/schemas/FeedFile/properties/file_id"),
- *                  @OA\Property(property="filter", ref="#/components/schemas/FeedFile/properties/filter"),
- *                  @OA\Property(property="utm", ref="#/components/schemas/FeedFile/properties/utm"),
- *                  @OA\Property(property="status", ref="#/components/schemas/FeedFile/properties/status"),
- *             )
- *         ),
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Successful operation",
- *         @OA\JsonContent(type="object", ref="#/components/schemas/FeedFile")
- *     )
- * )
- *
  * @OA\Patch(
  *     path="/feed-file/{id}",
  *     summary="Update",
@@ -174,9 +148,10 @@ class FeedFileController extends ActiveApiController
      * @param FeedFileSearchService $feedFileSearchService
      * @param FeedFileRepo $feedFileRepo
      * @param FileRepo $fileRepo
+     * @param FeedFileCreateService $feedFileCreateService
      * @param array<string, mixed> $config
      */
-    public function __construct($id, $module, private FeedFileSearchService $feedFileSearchService, private FeedFileRepo $feedFileRepo, private FileRepo $fileRepo, $config = [])
+    public function __construct($id, $module, private FeedFileSearchService $feedFileSearchService, private FeedFileRepo $feedFileRepo, private FileRepo $fileRepo, private FeedFileCreateService $feedFileCreateService, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -189,9 +164,51 @@ class FeedFileController extends ActiveApiController
     public function actions()
     {
         $actions = parent::actions();
-        unset($actions['delete']);
+        unset($actions['create'], $actions['delete']);
 
         return $actions;
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/feed-file",
+     *     summary="Create",
+     *     description="Create a record of FeedFile",
+     *     operationId="createFeedFile",
+     *     tags={"FeedFile"},
+     *     @OA\RequestBody(
+     *         description="FeedFile object that needs to be added",
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                  @OA\Property(property="client_id", ref="#/components/schemas/FeedFile/properties/client_id"),
+     *                  @OA\Property(property="platform_id", ref="#/components/schemas/FeedFile/properties/platform_id"),
+     *                  @OA\Property(property="file_id", ref="#/components/schemas/FeedFile/properties/file_id"),
+     *                  @OA\Property(property="filter", ref="#/components/schemas/FeedFile/properties/filter"),
+     *                  @OA\Property(property="utm", ref="#/components/schemas/FeedFile/properties/utm"),
+     *                  @OA\Property(property="status", ref="#/components/schemas/FeedFile/properties/status"),
+     *             )
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(type="object", ref="#/components/schemas/FeedFile")
+     *     )
+     * )
+     *
+     * @return ActiveRecord
+     */
+    public function actionCreate()
+    {
+        try {
+            $params = $this->getRequestParams();
+
+            return $this->feedFileCreateService->create($params);
+        } catch (Throwable $e) {
+            throw $e;
+        }
     }
 
     /**
