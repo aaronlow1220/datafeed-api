@@ -6,7 +6,6 @@ parameters:
         - commands
         - jobs
         - components
-        - controllers
         - models
         - modules
     bootstrapFiles:
