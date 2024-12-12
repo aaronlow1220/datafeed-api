@@ -64,6 +64,10 @@ class DatafeedService
                     break;
 
                 case 'txt':
+                    $cachedDataPath = $this->readTxt($filePath);
+
+                    break;
+
                 case 'csv':
                     $cachedDataPath = $this->readCsv($filePath);
 
@@ -279,6 +283,32 @@ class DatafeedService
         fclose($file);
 
         // Return the path to the temporary file
+        return $tempFilePath;
+    }
+
+    public function readTxt(string $filePath): string
+    {
+        $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
+        $handle = fopen($filePath, 'r');
+        $output = fopen($tempFilePath, 'w');
+
+        $bom = fread($handle, 3);
+        if ("\xEF\xBB\xBF" === $bom) {
+            fseek($handle, 3);
+        }
+
+        $firstLine = fgets($handle);
+        $separator = strpos($firstLine, ',') ? ',' : "\t";
+
+        fputcsv($output, str_getcsv($firstLine, $separator));
+
+        while (($line = fgetcsv($handle, 0, $separator)) !== false) {
+            fputcsv($output, $line);
+        }
+
+        fclose($handle);
+        fclose($output);
+
         return $tempFilePath;
     }
 

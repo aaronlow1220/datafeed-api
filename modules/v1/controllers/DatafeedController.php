@@ -191,6 +191,7 @@ class DatafeedController extends ActiveApiController
         $filterCondition = [
             'filter' => (object) [],
         ];
+
         if ($filterModel->load($params)) {
             $filterCondition = $params;
         }
