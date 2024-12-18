@@ -161,19 +161,25 @@ class DatafeedService
      */
     public function export(ActiveRecord $platform, ActiveRecord $client, ActiveRecord $feedFile): string
     {
-        $filter = json_decode($feedFile['filter'], true);
-
         $filterModel = new ActiveDataFilter([
             'searchModel' => 'v1\models\validator\DatafeedFilter',
         ]);
 
-        $filterCondition = null;
-        if ($filterModel->load($filter)) {
-            $filterCondition = $filterModel->build();
+        $filter = json_decode($feedFile['filter'], true);
+
+        if (!($filterModel->load($filter) && $filterModel->validate())) {
+            throw new Exception('Invalid filter condition');
         }
 
+        $filterCondition = $filterModel->build();
+
         try {
-            $datafeeds = $this->datafeedRepo->findByClientId($client['id'])->andWhere($filterCondition);
+            // $datafeeds = $this->datafeedRepo->findByClientId($client['id']);
+            $datafeeds = $this->datafeedRepo->findByClientId($client['id']);
+
+            if (null !== $filterCondition) {
+                $datafeeds = $datafeeds->andWhere($filterCondition);
+            }
 
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $this->resultPath, uniqid(), $client['name'], $platform['name']);
 
@@ -286,6 +292,13 @@ class DatafeedService
         return $tempFilePath;
     }
 
+    /**
+     * Read TXT file.
+     *
+     * @param string $filePath
+     *
+     * @return string
+     */
     public function readTxt(string $filePath): string
     {
         $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
@@ -344,8 +357,10 @@ class DatafeedService
      */
     public function addUtmParameters(array $data, string $utmParam): array
     {
-        // check if query starts with '?', if yes, remove it
-        $utmParam = ltrim($utmParam, " \n\r\t\v\x00?");
+        // check if query has '?', if exist throw error
+        if (false !== strpos($utmParam, '?')) {
+            throw new Exception('Invalid utm parameter');
+        }
 
         foreach ($data as $key => $value) {
             $linkParamConnector = strpos($data[$key]['link'], '?') ? '&' : '?';

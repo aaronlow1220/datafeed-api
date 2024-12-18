@@ -13,8 +13,8 @@ use app\components\platform\PlatformRepo;
 use v1\components\ActiveApiController;
 use v1\components\datafeed\DatafeedSearchService;
 use yii\base\Module;
-use yii\data\ActiveDataFilter;
 use yii\data\ActiveDataProvider;
+use yii\data\DataFilter;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
 
@@ -182,24 +182,25 @@ class DatafeedController extends ActiveApiController
     public function actionExport(int $id, int $platformid): array
     {
         $params = Yii::$app->request->get();
-        unset($params['id'], $params['platformid']);
 
-        $filterModel = new ActiveDataFilter([
+        $filterModel = new DataFilter([
             'searchModel' => 'v1\models\validator\DatafeedFilter',
         ]);
 
-        $filterCondition = [
-            'filter' => (object) [],
+        $filter = [
+            'filter' => $params['filter'] ?? (object) [],
         ];
 
-        if ($filterModel->load($params)) {
-            $filterCondition = $params;
+        if (isset($params['filter'])) {
+            if (!($filterModel->load($filter) && $filterModel->validate() && $filterModel->build())) {
+                throw new HttpException(404, 'Invalid filter condition');
+            }
         }
 
         try {
             $client = $this->clientRepo->findOne($id);
             $platform = $this->platformRepo->findOne($platformid);
-            $feedFiles = $this->feedFileRepo->find()->where(['client_id' => $id, 'platform_id' => $platformid, 'filter' => json_encode($filterCondition)])->all();
+            $feedFiles = $this->feedFileRepo->find()->where(['client_id' => $id, 'platform_id' => $platformid, 'filter' => json_encode($filter, JSON_UNESCAPED_UNICODE)])->all();
 
             if (!$feedFiles) {
                 throw new HttpException(404, 'Feed file not found');

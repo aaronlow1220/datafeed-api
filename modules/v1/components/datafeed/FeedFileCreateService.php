@@ -5,7 +5,7 @@ namespace v1\components\datafeed;
 use Exception;
 use Throwable;
 use app\components\datafeed\FeedFileRepo;
-use yii\data\ActiveDataFilter;
+use yii\data\DataFilter;
 use yii\db\ActiveRecord;
 
 /**
@@ -33,21 +33,22 @@ class FeedFileCreateService
         $transaction = $this->feedFileRepo->getDb()->beginTransaction();
 
         try {
-            // Check Filter
-            $filter = json_decode($params['filter'], true);
-            $filterModel = new ActiveDataFilter([
+            $filterModel = new DataFilter([
                 'searchModel' => 'v1\models\validator\DatafeedFilter',
             ]);
 
-            $filterModel->load($filter);
-            $filterCondition = $filterModel->build();
+            $filter = json_decode($params['filter'], true);
 
-            if (false === $filterCondition) {
+            $filterModel->load($filter);
+
+            if (!$filterModel->validate() && $filterModel->build()) {
                 throw new Exception('Invalid filter condition');
             }
 
-            // Check utm param
-            $params['utm'] = ltrim($params['utm'], " \n\r\t\v\x00?");
+            // Check utm param, if '?' exist in any position, throw exception
+            if (false !== strpos($params['utm'], '?')) {
+                throw new Exception('Invalid utm parameter');
+            }
 
             $feedFile = $this->feedFileRepo->create($params);
 
