@@ -13,8 +13,8 @@ use app\components\platform\PlatformRepo;
 use v1\components\ActiveApiController;
 use v1\components\datafeed\DatafeedSearchService;
 use yii\base\Module;
+use yii\data\ActiveDataFilter;
 use yii\data\ActiveDataProvider;
-use yii\data\DataFilter;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
 
@@ -183,7 +183,7 @@ class DatafeedController extends ActiveApiController
     {
         $params = Yii::$app->request->get();
 
-        $filterModel = new DataFilter([
+        $filterModel = new ActiveDataFilter([
             'searchModel' => 'v1\models\validator\DatafeedFilter',
         ]);
 

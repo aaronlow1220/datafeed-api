@@ -349,7 +349,7 @@ class DatafeedService
     public function addUtmParameters(array $data, string $utmParam): array
     {
         if (false !== strpos($utmParam, '?')) {
-            throw new Exception('utm query should not contain ?');
+            throw new Exception('UTM query should not contain ?');
         }
 
         foreach ($data as $key => $value) {
