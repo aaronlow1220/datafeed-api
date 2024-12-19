@@ -133,7 +133,6 @@ class DatafeedService
             $etl = data_frame()
                 ->read(from_csv($dataPath));
 
-            // Rename columns
             foreach ($clientInfo as $key => $value) {
                 $etl->rename($value, $key);
             }
@@ -174,7 +173,6 @@ class DatafeedService
         $filterCondition = $filterModel->build();
 
         try {
-            // $datafeeds = $this->datafeedRepo->findByClientId($client['id']);
             $datafeeds = $this->datafeedRepo->findByClientId($client['id']);
 
             if (null !== $filterCondition) {
@@ -246,13 +244,11 @@ class DatafeedService
                 $itemData[$key] = preg_replace('/\s+/', ' ', (string) $value);
             }
 
-            // Write CSV header (once)
             if (!$headerWritten) {
                 fputcsv($csvFile, array_keys($itemData));
                 $headerWritten = true;
             }
 
-            // Write data row to CSV
             fputcsv($csvFile, array_values($itemData));
         }
 
@@ -270,25 +266,20 @@ class DatafeedService
      */
     public function readCsv(string $filePath): string
     {
-        // Open the original file
         $file = fopen($filePath, 'r');
         $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
 
-        // Detect BOM
-        $bom = fread($file, 3);  // Read first 3 bytes
+        $bom = fread($file, 3);
         if ("\xEF\xBB\xBF" === $bom) {
-            // If BOM detected, remove it and get the rest of the content
             $content = fread($file, filesize($filePath) - 3);
 
-            file_put_contents($tempFilePath, $content);  // Write content without BOM to the temp file
+            file_put_contents($tempFilePath, $content);
         } else {
-            copy($filePath, $tempFilePath);  // Copy file to the temp file
+            copy($filePath, $tempFilePath);
         }
 
-        // Close the original file
         fclose($file);
 
-        // Return the path to the temporary file
         return $tempFilePath;
     }
 
@@ -357,9 +348,8 @@ class DatafeedService
      */
     public function addUtmParameters(array $data, string $utmParam): array
     {
-        // check if query has '?', if exist throw error
         if (false !== strpos($utmParam, '?')) {
-            throw new Exception('Invalid utm parameter');
+            throw new Exception('utm query should not contain ?');
         }
 
         foreach ($data as $key => $value) {
