@@ -11,6 +11,7 @@ use app\modules\v1\Module;
 use v1\components\ActiveApiController;
 use v1\components\datafeed\FeedFileCreateService;
 use v1\components\datafeed\FeedFileSearchService;
+use v1\components\datafeed\FeedFileUpdateService;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 use yii\web\HttpException;
@@ -96,41 +97,6 @@ use yii\web\Response;
  *     )
  * )
  *
- * @OA\Patch(
- *     path="/feed-file/{id}",
- *     summary="Update",
- *     description="Update a record of FeedFile",
- *     operationId="updateFeedFile",
- *     tags={"FeedFile"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         description="FeedFile id",
- *         required=true,
- *         @OA\Schema(ref="#/components/schemas/FeedFile/properties/id")
- *     ),
- *     @OA\RequestBody(
- *         description="FeedFile object that needs to be updated",
- *         required=true,
- *         @OA\MediaType(
- *             mediaType="application/json",
- *             @OA\Schema(
- *                  @OA\Property(property="client_id", ref="#/components/schemas/FeedFile/properties/client_id"),
- *                  @OA\Property(property="platform_id", ref="#/components/schemas/FeedFile/properties/platform_id"),
- *                  @OA\Property(property="file_id", ref="#/components/schemas/FeedFile/properties/file_id"),
- *                  @OA\Property(property="filter", ref="#/components/schemas/FeedFile/properties/filter"),
- *                  @OA\Property(property="utm", ref="#/components/schemas/FeedFile/properties/utm"),
- *                  @OA\Property(property="status", ref="#/components/schemas/FeedFile/properties/status"),
- *             )
- *         ),
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Successful operation",
- *         @OA\JsonContent(type="object", ref="#/components/schemas/FeedFile")
- *     )
- * )
- *
  * @version 1.0.0
  */
 class FeedFileController extends ActiveApiController
@@ -149,9 +115,10 @@ class FeedFileController extends ActiveApiController
      * @param FeedFileRepo $feedFileRepo
      * @param FileRepo $fileRepo
      * @param FeedFileCreateService $feedFileCreateService
+     * @param FeedFileUpdateService $feedFileUpdateService
      * @param array<string, mixed> $config
      */
-    public function __construct($id, $module, private FeedFileSearchService $feedFileSearchService, private FeedFileRepo $feedFileRepo, private FileRepo $fileRepo, private FeedFileCreateService $feedFileCreateService, $config = [])
+    public function __construct($id, $module, private FeedFileSearchService $feedFileSearchService, private FeedFileRepo $feedFileRepo, private FileRepo $fileRepo, private FeedFileCreateService $feedFileCreateService, private FeedFileUpdateService $feedFileUpdateService, $config = [])
     {
         parent::__construct($id, $module, $config);
     }
@@ -164,7 +131,7 @@ class FeedFileController extends ActiveApiController
     public function actions()
     {
         $actions = parent::actions();
-        unset($actions['create'], $actions['delete']);
+        unset($actions['create'], $actions['update'], $actions['delete']);
 
         return $actions;
     }
@@ -206,6 +173,57 @@ class FeedFileController extends ActiveApiController
             $params = $this->getRequestParams();
 
             return $this->feedFileCreateService->create($params);
+        } catch (Throwable $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * @OA\Patch(
+     *     path="/feed-file/{id}",
+     *     summary="Update",
+     *     description="Update a record of FeedFile",
+     *     operationId="updateFeedFile",
+     *     tags={"FeedFile"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="FeedFile id",
+     *         required=true,
+     *         @OA\Schema(ref="#/components/schemas/FeedFile/properties/id")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="FeedFile object that needs to be updated",
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                  @OA\Property(property="client_id", ref="#/components/schemas/FeedFile/properties/client_id"),
+     *                  @OA\Property(property="platform_id", ref="#/components/schemas/FeedFile/properties/platform_id"),
+     *                  @OA\Property(property="file_id", ref="#/components/schemas/FeedFile/properties/file_id"),
+     *                  @OA\Property(property="filter", ref="#/components/schemas/FeedFile/properties/filter"),
+     *                  @OA\Property(property="utm", ref="#/components/schemas/FeedFile/properties/utm"),
+     *                  @OA\Property(property="status", ref="#/components/schemas/FeedFile/properties/status"),
+     *             )
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(type="object", ref="#/components/schemas/FeedFile")
+     *     )
+     * )
+     *
+     * @param int $id
+     * @return ActiveRecord
+     */
+    public function actionUpdate($id)
+    {
+        try {
+            $params = $this->getRequestParams();
+            $feedFile = $this->feedFileRepo->findOne($id);
+
+            return $this->feedFileUpdateService->update($feedFile, $params);
         } catch (Throwable $e) {
             throw $e;
         }
