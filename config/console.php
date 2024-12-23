@@ -36,6 +36,7 @@ $config = [
         // ],
         'queue' => [
             'class' => '\yii\queue\db\Queue',
+            'as log' => '\yii\queue\LogBehavior',
             'db' => 'db',
             'tableName' => 'queue',
             'channel' => 'default',
