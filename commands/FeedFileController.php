@@ -124,9 +124,15 @@ class FeedFileController extends Controller
     public function actionUpdateFeed(FeedFileRepo $feedFileRepo, FileRepo $fileRepo, PlatformRepo $platformRepo, ClientRepo $clientRepo, DatafeedService $datafeedService)
     {
         try {
+            if (null == $this->feed) {
+                echo $this->ansiFormat('Please provide feed id with "-f" flag'."\n", BaseConsole::BG_RED);
+
+                return;
+            }
+
             $feedFile = $feedFileRepo->findOne(['id' => $this->feed, 'status' => '1']);
             $client = $clientRepo->find()->where(['id' => $feedFile['client_id']])->one();
-            $platform = $platformRepo->find()->where(['id' => $feedFile['client_id']])->one();
+            $platform = $platformRepo->find()->where(['id' => $feedFile['platform_id']])->one();
 
             /**
              * @var ActiveRecord $client
