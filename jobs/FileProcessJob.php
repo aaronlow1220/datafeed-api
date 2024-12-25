@@ -58,9 +58,13 @@ class FileProcessJob extends BaseObject implements JobInterface
         $transaction = $this->datafeedRepo->getDb()->beginTransaction();
         $dataVersion = $this->dataVersionRepo->find()->where(['client_id' => $this->clientId])->one();
         $client = $this->clientRepo->findOne($this->clientId);
-        $transformedFilePath = $this->datafeedService->transformDataToFile($this->filePath, $client);
+        $transformedFilePath = '';
 
         try {
+            echo 'Processing file '.$this->filePath."\n";
+
+            $transformedFilePath = $this->datafeedService->transformDataToFile($this->filePath, $client);
+
             if (!$dataVersion) {
                 throw new Exception('Data version not found');
             }
@@ -71,7 +75,6 @@ class FileProcessJob extends BaseObject implements JobInterface
             $hasExistingDatafeeds = count($clientDatafeeds) > 0;
             $file = fopen($transformedFilePath, 'r');
             $headers = fgetcsv($file);
-            $processedDatafeedIds = [];
 
             // Read all datafeed from file into a separate array with datafeedid as key
             $fileDatafeeds = [];
@@ -117,11 +120,12 @@ class FileProcessJob extends BaseObject implements JobInterface
 
             return;
         } catch (Throwable $e) {
+            echo 'Failed: '.$e->getMessage()."\n";
+            $transaction->rollBack();
             if ($dataVersion) {
                 $dataVersion = $this->dataVersionRepo->update($dataVersion, ['status' => '0']);
             }
 
-            $transaction->rollBack();
             if ($file) {
                 fclose($file);
                 unlink($transformedFilePath);

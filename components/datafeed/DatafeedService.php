@@ -232,29 +232,33 @@ class DatafeedService
      */
     public function readXml(string $filePath): string
     {
-        $xml = new SimpleXMLElement($filePath, 0, true);
-        $outputCsvPath = $this->cachePath.'/'.uniqid().'.csv';
-        $csvFile = fopen($outputCsvPath, 'w');
+        try {
+            $xml = new SimpleXMLElement($filePath, 0, true);
+            $outputCsvPath = $this->cachePath.'/'.uniqid().'.csv';
+            $csvFile = fopen($outputCsvPath, 'w');
 
-        $headerWritten = false;
+            $headerWritten = false;
 
-        foreach ($xml->channel->item as $item) {
-            $itemData = [];
-            foreach ($item->children('g', true) as $key => $value) {
-                $itemData[$key] = preg_replace('/\s+/', ' ', (string) $value);
+            foreach ($xml->channel->item as $item) {
+                $itemData = [];
+                foreach ($item->children('g', true) as $key => $value) {
+                    $itemData[$key] = preg_replace('/\s+/', ' ', (string) $value);
+                }
+
+                if (!$headerWritten) {
+                    fputcsv($csvFile, array_keys($itemData));
+                    $headerWritten = true;
+                }
+
+                fputcsv($csvFile, array_values($itemData));
             }
 
-            if (!$headerWritten) {
-                fputcsv($csvFile, array_keys($itemData));
-                $headerWritten = true;
-            }
+            fclose($csvFile);
 
-            fputcsv($csvFile, array_values($itemData));
+            return $outputCsvPath;
+        } catch (Throwable $e) {
+            throw $e;
         }
-
-        fclose($csvFile);
-
-        return $outputCsvPath;
     }
 
     /**
