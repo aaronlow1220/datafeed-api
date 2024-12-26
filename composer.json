@@ -26,7 +26,8 @@
         "myclabs/php-enum": "^1.8",
         "flow-php/parquet": "1.x-dev",
         "flow-php/etl-adapter-parquet": "1.x-dev",
-        "yiisoft/yii2-queue": "^2.0@dev"
+        "yiisoft/yii2-queue": "^2.0@dev",
+        "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

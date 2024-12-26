@@ -211,6 +211,13 @@ class DatafeedService
                 $data = [];
                 $etl->load(to_array($data))->run();
                 foreach ($data as $feed) {
+                    foreach ($feed as $key => $value) {
+                        if ('object' === gettype($feed[$key])) {
+                            if ('DOMDocument' === get_class($feed[$key])) {
+                                $feed[$key] = $feed[$key]->textContent;
+                            }
+                        }
+                    }
                     fputcsv($file, $feed);
                 }
             }

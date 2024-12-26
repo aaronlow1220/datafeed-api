@@ -3,6 +3,7 @@
 namespace app\components\core;
 
 use Exception;
+use GuzzleHttp\Client;
 use app\components\FileEntity;
 use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
@@ -10,7 +11,7 @@ use yii\web\UploadedFile;
 /**
  * This service is used to handle specific business logic for File.
  *
- * @author Noah Wang <noah.wang@atelli.ai>
+ * @author Aaron Low <aaron.low@atelli.ai>
  */
 final class FileService
 {
@@ -72,14 +73,9 @@ final class FileService
      */
     public function loadFileToUploadedFile($url)
     {
-        $fileContent = file_get_contents($url);
-
-        if (false === $fileContent) {
-            throw new Exception("Could not read file from {$url}");
-        }
-
         $tempFilePath = tempnam(sys_get_temp_dir(), 'upload');
-        file_put_contents($tempFilePath, $fileContent);
+        $client = new Client();
+        $client->request('GET', $url, ['sink' => $tempFilePath]);
 
         $mimeToExt = [
             'text/csv' => 'csv',
