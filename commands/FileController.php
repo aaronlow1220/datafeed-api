@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use Throwable;
+use app\components\core\FileRepo;
 use yii\console\Controller;
 
 /**
@@ -15,9 +16,10 @@ class FileController extends Controller
     /**
      * Delete original files that are older than 180 days.
      *
+     * @param FileRepo $fileRepo
      * @return void
      */
-    public function actionDeleteOriginalFiles()
+    public function actionDeleteOriginalFiles(FileRepo $fileRepo)
     {
         $days = 180;
 
@@ -30,6 +32,12 @@ class FileController extends Controller
 
         $files = array_values(preg_grep('/^([^.])/', scandir($originalFilePath)));
 
+        if (empty($files)) {
+            echo "No files found in directory: {$originalFilePath}\n";
+
+            return;
+        }
+
         $now = time();
         $maxTime = $days * 24 * 60 * 60; // 1 day
         foreach ($files as $file) {
@@ -39,6 +47,7 @@ class FileController extends Controller
             if ($fileExistedTime > $maxTime) {
                 try {
                     unlink($filePath);
+                    $fileRepo->update(['filename' => $file], ['deleted_at' => $now]);
                     $fileExistedTime = round($fileExistedTime / 60 / 60 / 24);
                     echo "Deleted: {$file}\t Existed for {$fileExistedTime} days\n";
                 } catch (Throwable $e) {

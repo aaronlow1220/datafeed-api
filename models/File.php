@@ -19,6 +19,7 @@ use yii\db\ActiveRecord;
  *   @OA\Property(property="filename", type="string", description="File name", maxLength=255),
  *   @OA\Property(property="path", type="string", description="Path", maxLength=255),
  *   @OA\Property(property="size", type="integer", description="檔案大小 in byte"),
+ *   @OA\Property(property="deleted_at", type="integer", description="unixtime"),
  *   @OA\Property(property="created_by", type="integer", description="ref: > user.id"),
  *   @OA\Property(property="created_at", type="integer", description="unixtime"),
  *   @OA\Property(property="updated_by", type="integer", description="ref: > user.id"),
@@ -70,7 +71,7 @@ class File extends ActiveRecord
     {
         return [
             [['mime', 'extension', 'filename', 'path'], 'trim'],
-            [['id', 'size', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
+            [['id', 'size', 'deleted_at', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['mime', 'extension', 'filename', 'path'], 'string'],
         ];
     }
