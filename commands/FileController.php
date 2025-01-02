@@ -56,7 +56,7 @@ class FileController extends Controller
      * @param FileRepo $fileRepo
      * @return void
      */
-    public function actionDeleteFiles(FileRepo $fileRepo)
+    public function actionDelete(FileRepo $fileRepo)
     {
         $days = 180;
 
