@@ -2,7 +2,10 @@
 
 namespace app\commands;
 
+use Exception;
+use Hug\Sftp\Sftp;
 use Throwable;
+use Yii;
 use app\components\client\ClientRepo;
 use app\components\core\FileRepo;
 use app\components\datafeed\DatafeedService;
@@ -61,6 +64,8 @@ class FeedFileController extends Controller
      */
     public function actionUpdateAll(FeedFileRepo $feedFileRepo, FileRepo $fileRepo, PlatformRepo $platformRepo, ClientRepo $clientRepo, DatafeedService $datafeedService)
     {
+        $sftp = Yii::$app->params['sftp'];
+
         $feedFiles = $feedFileRepo->find()->where(['status' => '1'])->all();
 
         try {
@@ -102,6 +107,14 @@ class FeedFileController extends Controller
                 ];
 
                 $feedFile = $feedFileRepo->update($feedFile, $feedFileParams);
+
+                if ('1' == $platform['sftp']) {
+                    $sftpFilePath = sprintf('ftp/files/%s_%s_%s_feed.csv', $client['name'], $platform['name'], $feedFile['id']);
+                    $sftpUpload = Sftp::upload($sftp['host'], $sftp['username'], $sftp['password'], $resultPath, $sftpFilePath);
+                    if (!$sftpUpload) {
+                        throw new Exception('Failed to upload file to SFTP');
+                    }
+                }
 
                 echo 'Feed file: '.$feedFile['id'].' has been updated'."\n";
             }

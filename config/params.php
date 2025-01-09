@@ -7,4 +7,9 @@ return [
         'username' => $_ENV['DB_USERNAME'],
         'password' => $_ENV['DB_PASSWORD'],
     ],
+    'sftp' => [
+        'host' => $_ENV['SFTP_HOST'],
+        'username' => $_ENV['SFTP_USERNAME'],
+        'password' => $_ENV['SFTP_PASSWORD'],
+    ],
 ];

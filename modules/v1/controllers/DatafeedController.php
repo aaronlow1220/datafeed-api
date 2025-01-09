@@ -2,6 +2,7 @@
 
 namespace v1\controllers;
 
+use Hug\Sftp\Sftp;
 use InvalidArgumentException;
 use Throwable;
 use Yii;
@@ -147,7 +148,7 @@ class DatafeedController extends ActiveApiController
 
     /**
      * @OA\Get(
-     *     path="/datafeed/export/{id}/{platformid}",
+     *     path="/datafeed/export/{id}",
      *     summary="Export",
      *     description="Export a record of Datafeed",
      *     operationId="exportDatafeed",
@@ -155,16 +156,9 @@ class DatafeedController extends ActiveApiController
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Client id",
+     *         description="id",
      *         required=true,
-     *         @OA\Schema(ref="#/components/schemas/Client/properties/id")
-     *     ),
-     *     @OA\Parameter(
-     *         name="platformid",
-     *         in="path",
-     *         description="Platform id",
-     *         required=true,
-     *         @OA\Schema(ref="#/components/schemas/Platform/properties/id")
+     *         @OA\Schema(ref="#/components/schemas/FeedFile/properties/id")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -176,11 +170,12 @@ class DatafeedController extends ActiveApiController
      * Export datafeed.
      *
      * @param int $id
-     * @param int $platformid
      * @return ActiveRecord[]
      */
-    public function actionExport(int $id, int $platformid): array
+    public function actionExport(int $id): array
     {
+        $sftp = Yii::$app->params['sftp'];
+
         $params = Yii::$app->request->get();
 
         $filterModel = new ActiveDataFilter([
@@ -198,9 +193,9 @@ class DatafeedController extends ActiveApiController
         }
 
         try {
-            $client = $this->clientRepo->findOne($id);
-            $platform = $this->platformRepo->findOne($platformid);
-            $feedFiles = $this->feedFileRepo->find()->where(['client_id' => $id, 'platform_id' => $platformid, 'filter' => json_encode($filter, JSON_UNESCAPED_UNICODE)])->all();
+            $feedFiles = $this->feedFileRepo->findOne(['id' => $id, 'filter' => json_encode($filter, JSON_UNESCAPED_UNICODE)]);
+            $client = $this->clientRepo->findOne($feedFiles['client_id']);
+            $platform = $this->platformRepo->findOne($feedFiles['platform_id']);
 
             if (!$feedFiles) {
                 throw new HttpException(404, 'Feed file not found');
@@ -208,29 +203,32 @@ class DatafeedController extends ActiveApiController
 
             $files = null;
 
-            foreach ($feedFiles as $feedFile) {
-                /**
-                 * @var ActiveRecord $feedFile
-                 */
-                $resultPath = $this->datafeedService->export($platform, $client, $feedFile);
+            $resultPath = $this->datafeedService->export($platform, $client, $feedFiles);
 
-                $data = [
-                    'mime' => 'text/csv',
-                    'extension' => 'csv',
-                    'filename' => basename($resultPath),
-                    'path' => $resultPath,
-                    'size' => filesize($resultPath),
-                ];
+            $data = [
+                'mime' => 'text/csv',
+                'extension' => 'csv',
+                'filename' => basename($resultPath),
+                'path' => $resultPath,
+                'size' => filesize($resultPath),
+            ];
 
-                $file = $this->fileRepo->create($data);
+            $file = $this->fileRepo->create($data);
 
-                $files[] = $file;
+            $files[] = $file;
 
-                $feedFileParams = [
-                    'file_id' => $file['id'],
-                ];
+            $feedFileParams = [
+                'file_id' => $file['id'],
+            ];
 
-                $feedFile = $this->feedFileRepo->update($feedFile, $feedFileParams);
+            $feedFile = $this->feedFileRepo->update($feedFiles, $feedFileParams);
+
+            if ('1' == $platform['sftp']) {
+                $sftpFilePath = sprintf('ftp/files/%s_%s_%s_feed.csv', $client['name'], $platform['name'], $feedFiles['id']);
+                $sftpUpload = Sftp::upload($sftp['host'], $sftp['username'], $sftp['password'], $resultPath, $sftpFilePath);
+                if (!$sftpUpload) {
+                    throw new HttpException(500, 'Failed to upload file to SFTP');
+                }
             }
 
             return $files;

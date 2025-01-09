@@ -42,9 +42,9 @@ return [
         ],
         'extraPatterns' => [
             'OPTIONS <a:(search)>' => 'options',
-            'OPTIONS <a:(export)>/<id:\d+>/<platformid:\d+>' => 'options',
+            'OPTIONS <a:(export)>/<id:\d+>' => 'options',
             'POST <a:(search)>' => '<a>',
-            'GET <a:(export)>/<id:\d+>/<platformid:\d+>' => '<a>',
+            'GET <a:(export)>/<id:\d+>' => '<a>',
         ],
     ],
     [ // File

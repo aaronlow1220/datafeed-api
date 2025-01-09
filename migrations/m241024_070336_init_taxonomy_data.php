@@ -27,6 +27,7 @@ class m241024_070336_init_taxonomy_data extends Migration
             ['user_status', 'User Status', time(), time(), 0, 0],
             ['feed_file_status', 'Feed File Status', time(), time(), 0, 0],
             ['data_version_status', 'Data Version Status', time(), time(), 0, 0],
+            ['platform_sftp', 'Platform SFTP', time(), time(), 0, 0],
         ];
 
         $this->batchInsert($this->typeTable, ['name', 'description', 'created_at', 'updated_at', 'created_by', 'updated_by'], $types);
@@ -49,6 +50,10 @@ class m241024_070336_init_taxonomy_data extends Migration
                 ['成功', '1', 1, '0', '', time(), time(), 0, 0],
                 ['待處理', '1', 1, '0', '', time(), time(), 0, 0],
                 ['處理中', '1', 1, '0', '', time(), time(), 0, 0],
+            ],
+            [ // platform_sftp_status
+                ['否', '0', 1, '0', '', time(), time(), 0, 0],
+                ['是', '1', 1, '0', '', time(), time(), 0, 0],
             ],
         ];
 
