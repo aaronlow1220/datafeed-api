@@ -94,7 +94,7 @@ class DatafeedService
     public function transform(string $dataPath, ActiveRecord $client): string
     {
         try {
-            $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
+            $tempFilePath = sprintf('%s/%s.csv', $this->cachePath, uniqid());
             $clientInfo = json_decode($client['data'], true);
 
             $select = [
@@ -241,7 +241,7 @@ class DatafeedService
     {
         try {
             $xml = new SimpleXMLElement($filePath, 0, true);
-            $outputCsvPath = $this->cachePath.'/'.uniqid().'.csv';
+            $outputCsvPath = sprintf('%s/%s.csv', $this->cachePath, uniqid());
             $csvFile = fopen($outputCsvPath, 'w');
 
             $headerWritten = false;
@@ -278,7 +278,7 @@ class DatafeedService
     public function readCsv(string $filePath): string
     {
         $file = fopen($filePath, 'r');
-        $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
+        $tempFilePath = sprintf('%s/%s.csv', $this->cachePath, uniqid());
 
         $bom = fread($file, 3);
         if ("\xEF\xBB\xBF" === $bom) {
@@ -303,7 +303,7 @@ class DatafeedService
      */
     public function readTxt(string $filePath): string
     {
-        $tempFilePath = $this->cachePath.'/'.uniqid().'.csv';
+        $tempFilePath = sprintf('%s/%s.csv', $this->cachePath, uniqid());
         $handle = fopen($filePath, 'r');
         $output = fopen($tempFilePath, 'w');
 
