@@ -22,10 +22,10 @@
         "atellitech/utils-yii2": "dev-main",
         "doctrine/annotations": "2.0.x-dev",
         "flow-php/etl": "^0.10.0",
-        "flow-php/etl-adapter-csv": "1.x-dev",
+        "flow-php/etl-adapter-csv": "^0.10.0",
         "myclabs/php-enum": "^1.8",
-        "flow-php/parquet": "1.x-dev",
-        "flow-php/etl-adapter-parquet": "1.x-dev",
+        "flow-php/parquet": "^0.10.0",
+        "flow-php/etl-adapter-parquet": "^0.10.0",
         "yiisoft/yii2-queue": "^2.0@dev",
         "guzzlehttp/guzzle": "^7.0",
         "hugsbrugs/php-sftp": "^1.1"
