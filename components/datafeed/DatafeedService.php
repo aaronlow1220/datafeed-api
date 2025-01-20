@@ -307,11 +307,6 @@ class DatafeedService
         $handle = fopen($filePath, 'r');
         $output = fopen($tempFilePath, 'w');
 
-        $bom = fread($handle, 3);
-        if ("\xEF\xBB\xBF" === $bom) {
-            fseek($handle, 3);
-        }
-
         $firstLine = fgets($handle);
         $separator = strpos($firstLine, ',') ? ',' : "\t";
 
