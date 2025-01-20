@@ -90,9 +90,9 @@ class Datafeed extends ActiveRecord
     public function rules()
     {
         return [
-            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'version', 'status'], 'trim'],
+            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'currency', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'version', 'status'], 'trim'],
             [['id', 'client_id', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'version', 'status'], 'string'],
+            [['datafeedid', 'condition', 'availability', 'description', 'image_link', 'link', 'title', 'price', 'sale_price', 'gtin', 'mpn', 'brand', 'google_product_category', 'item_group_id', 'currency', 'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4', 'version', 'status'], 'string'],
             [['status'], 'in', 'range' => ['0', '1']],
             [['status'], 'default', 'value' => '1'],
         ];

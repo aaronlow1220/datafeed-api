@@ -18,6 +18,7 @@ use yii\db\ActiveRecord;
  *   @OA\Property(property="name", type="string", description="Platform name", maxLength=255),
  *   @OA\Property(property="data", type="string", description="Data mapping rule, JSON format"),
  *   @OA\Property(property="sftp", type="string", description="0:false 1:true, ref:taxonomies.value of type name[platform_sftp]", default="0", enum={"0", "1"}),
+ *   @OA\Property(property="price_currency", type="string", description="0:false 1:true, ref:taxonomies.value of type name[platform_price_currency]", default="0", enum={"0", "1"}),
  *   @OA\Property(property="created_by", type="integer", description="ref: > user.id"),
  *   @OA\Property(property="created_at", type="integer", description="unixtime"),
  *   @OA\Property(property="updated_by", type="integer", description="ref: > user.id"),
@@ -71,11 +72,11 @@ class Platform extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'label', 'data', 'sftp'], 'trim'],
+            [['name', 'label', 'data', 'sftp', 'price_currency'], 'trim'],
             [['id', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['name', 'label', 'data', 'sftp'], 'string'],
-            [['sftp'], 'in', 'range' => ['0', '1']],
-            [['sftp'], 'default', 'value' => '0'],
+            [['name', 'label', 'data', 'sftp', 'price_currency'], 'string'],
+            [['sftp', 'price_currency'], 'in', 'range' => ['0', '1']],
+            [['sftp', 'price_currency'], 'default', 'value' => '0'],
         ];
     }
 

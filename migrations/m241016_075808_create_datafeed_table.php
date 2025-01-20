@@ -34,6 +34,7 @@ class m241016_075808_create_datafeed_table extends Migration
             'brand' => $this->string(255)->comment('Brand'),
             'google_product_category' => $this->string(255)->comment('Google product category'),
             'item_group_id' => $this->string(255)->comment('Item group id'),
+            'currency' => $this->string(3)->comment('Currency'),
             'custom_label_0' => $this->string(255)->comment('Custom label 0'),
             'custom_label_1' => $this->string(255)->comment('Custom label 1'),
             'custom_label_2' => $this->string(255)->comment('Custom label 2'),

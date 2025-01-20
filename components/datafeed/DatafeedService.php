@@ -218,6 +218,13 @@ class DatafeedService
                             }
                         }
                     }
+
+                    if (null !== $feed['price']) {
+                        $feed['price'] = sprintf('%s %s', $feed['price'], $client['currency']);
+                    }
+                    if (null !== $feed['sale_price']) {
+                        $feed['sale_price'] = sprintf('%s %s', $feed['sale_price'], $client['currency']);
+                    }
                     fputcsv($file, $feed);
                 }
             }

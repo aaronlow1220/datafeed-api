@@ -104,7 +104,8 @@ use yii\web\HttpException;
  *             @OA\Schema(
  *                  @OA\Property(property="name", ref="#/components/schemas/Client/properties/name"),
  *                  @OA\Property(property="label", ref="#/components/schemas/Client/properties/label"),
- *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data")
+ *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data"),
+ *                  @OA\Property(property="currency", ref="#/components/schemas/Client/properties/currency")
  *             )
  *         ),
  *     ),
@@ -136,7 +137,8 @@ use yii\web\HttpException;
  *             @OA\Schema(
  *                  @OA\Property(property="name", ref="#/components/schemas/Client/properties/name"),
  *                  @OA\Property(property="label", ref="#/components/schemas/Client/properties/label"),
- *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data")
+ *                  @OA\Property(property="data", ref="#/components/schemas/Client/properties/data"),
+ *                  @OA\Property(property="currency", ref="#/components/schemas/Client/properties/currency")
  *             )
  *         ),
  *     ),

@@ -88,6 +88,7 @@ use yii\web\HttpException;
  *                  @OA\Property(property="brand", ref="#/components/schemas/Datafeed/properties/brand"),
  *                  @OA\Property(property="google_product_category", ref="#/components/schemas/Datafeed/properties/google_product_category"),
  *                  @OA\Property(property="item_group_id", ref="#/components/schemas/Datafeed/properties/item_group_id"),
+ *                  @OA\Property(property="currency", ref="#/components/schemas/Datafeed/properties/currency"),
  *                  @OA\Property(property="custom_label_0", ref="#/components/schemas/Datafeed/properties/custom_label_0"),
  *                  @OA\Property(property="custom_label_1", ref="#/components/schemas/Datafeed/properties/custom_label_1"),
  *                  @OA\Property(property="custom_label_2", ref="#/components/schemas/Datafeed/properties/custom_label_2"),

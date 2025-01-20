@@ -105,7 +105,8 @@ use yii\web\HttpException;
  *                  @OA\Property(property="name", ref="#/components/schemas/Platform/properties/name"),
  *                  @OA\Property(property="label", ref="#/components/schemas/Platform/properties/label"),
  *                  @OA\Property(property="data", ref="#/components/schemas/Platform/properties/data"),
- *                  @OA\Property(property="sftp", ref="#/components/schemas/Platform/properties/sftp")
+ *                  @OA\Property(property="sftp", ref="#/components/schemas/Platform/properties/sftp"),
+ *                  @OA\Property(property="price_currency", ref="#/components/schemas/Platform/properties/price_currency")
  *             )
  *         ),
  *     ),
@@ -138,7 +139,8 @@ use yii\web\HttpException;
  *                  @OA\Property(property="name", ref="#/components/schemas/Platform/properties/name"),
  *                  @OA\Property(property="label", ref="#/components/schemas/Platform/properties/label"),
  *                  @OA\Property(property="data", ref="#/components/schemas/Platform/properties/data"),
- *                  @OA\Property(property="sftp", ref="#/components/schemas/Platform/properties/sftp")
+ *                  @OA\Property(property="sftp", ref="#/components/schemas/Platform/properties/sftp"),
+ *                  @OA\Property(property="price_currency", ref="#/components/schemas/Platform/properties/price_currency")
  *             )
  *         ),
  *     ),

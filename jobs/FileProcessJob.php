@@ -90,6 +90,10 @@ class FileProcessJob extends BaseObject implements JobInterface
                         $record['status'] = '1';
                         $record['client_id'] = strval($this->clientId);
                         $record['version'] = $version;
+                        $record['price'] = floatval($record['price']);
+                        $record['sale_price'] = floatval($record['sale_price']);
+                        $record['currency'] = $client['currency'];
+
                         $this->datafeedRepo->update($datafeed['id'], $record);
                     } else {
                         $this->datafeedRepo->update($datafeed['id'], ['status' => '0']);
@@ -100,6 +104,10 @@ class FileProcessJob extends BaseObject implements JobInterface
                     $record['status'] = '1';
                     $record['client_id'] = strval($this->clientId);
                     $record['version'] = $version;
+                    $record['price'] = floatval($record['price']);
+                    $record['sale_price'] = floatval($record['sale_price']);
+                    $record['currency'] = $client['currency'];
+
                     $this->datafeedRepo->create($record);
                 }
             }
