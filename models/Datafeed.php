@@ -29,6 +29,7 @@ use yii\db\ActiveRecord;
  *   @OA\Property(property="brand", type="string", description="Brand", maxLength=255),
  *   @OA\Property(property="google_product_category", type="string", description="Google product category", maxLength=255),
  *   @OA\Property(property="item_group_id", type="string", description="Item group id", maxLength=255),
+ *   @OA\Property(property="currency", type="string", description="Currency", maxLength=3),
  *   @OA\Property(property="custom_label_0", type="string", description="Custom label 0", maxLength=255),
  *   @OA\Property(property="custom_label_1", type="string", description="Custom label 1", maxLength=255),
  *   @OA\Property(property="custom_label_2", type="string", description="Custom label 2", maxLength=255),
