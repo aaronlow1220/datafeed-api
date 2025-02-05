@@ -1,89 +1,89 @@
 {
-    "name": "yiisoft/yii2-app-basic",
-    "description": "Yii 2 Basic Project Template",
-    "keywords": ["yii2", "framework", "basic", "project template"],
-    "homepage": "https://www.yiiframework.com/",
-    "type": "project",
-    "license": "BSD-3-Clause",
-    "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "https://www.yiiframework.com/forum/",
-        "wiki": "https://www.yiiframework.com/wiki/",
-        "irc": "ircs://irc.libera.chat:6697/yii",
-        "source": "https://github.com/yiisoft/yii2"
+  "name": "atellitech/morph-api",
+  "description": "This is an APIs project for Morph",
+  "keywords": [
+    "yii2",
+    "morph",
+    "atellitech",
+    "apis"
+  ],
+  "homepage": "https://github.com/AtelliTech/morph-api",
+  "type": "project",
+  "license": "BSD-3-Clause",
+  "support": {
+    "issues": "https://github.com/AtelliTech/morph-api/issues",
+    "source": "https://github.com/AtelliTech/morph-api"
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=8.0",
+    "yiisoft/yii2": "~2.0.45",
+    "vlucas/phpdotenv": "^5.5",
+    "atellitech/utils-yii2": "^1.1",
+    "doctrine/annotations": "^2.0",
+    "flow-php/etl": "^0.10.0",
+    "flow-php/etl-adapter-csv": "^0.10.0",
+    "myclabs/php-enum": "^1.8",
+    "yiisoft/yii2-queue": "^2.3",
+    "guzzlehttp/guzzle": "^7.0",
+    "hugsbrugs/php-sftp": "^1.1",
+    "atellitech/auths-sdk-php": "^2.2"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.54",
+    "phpstan/phpstan": "^1.10",
+    "timeweb/phpstan-enum": "^3.1"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true
     },
     "minimum-stability": "stable",
     "require": {
         "php": ">=8.1.0",
         "yiisoft/yii2": "~2.0.45",
-        "yiisoft/yii2-bootstrap5": "~2.0.2",
-        "yiisoft/yii2-symfonymailer": "~2.0.3",
-        "vlucas/phpdotenv": "^5.6@dev",
-        "atellitech/utils-yii2": "dev-main",
-        "doctrine/annotations": "2.0.x-dev",
+        "vlucas/phpdotenv": "^5.5",
+        "atellitech/utils-yii2": "^1.1",
+        "doctrine/annotations": "^2.0",
         "flow-php/etl": "^0.10.0",
         "flow-php/etl-adapter-csv": "^0.10.0",
         "myclabs/php-enum": "^1.8",
-        "flow-php/parquet": "^0.10.0",
-        "flow-php/etl-adapter-parquet": "^0.10.0",
-        "yiisoft/yii2-queue": "^2.0@dev",
+        "yiisoft/yii2-queue": "^2.3",
         "guzzlehttp/guzzle": "^7.0",
-        "hugsbrugs/php-sftp": "^1.1"
+        "hugsbrugs/php-sftp": "^1.1",
+        "atellitech/auths-sdk-php": "^2.1"
     },
     "require-dev": {
-        "yiisoft/yii2-debug": "~2.1.0",
-        "yiisoft/yii2-gii": "~2.2.0",
-        "yiisoft/yii2-faker": "~2.0.0",
-        "codeception/codeception": "^5.0.0 || ^4.0",
-        "codeception/lib-innerbrowser": "^4.0 || ^3.0 || ^1.1",
-        "codeception/module-asserts": "^3.0 || ^1.1",
-        "codeception/module-yii2": "^1.1",
-        "codeception/module-filesystem": "^3.0 || ^2.0 || ^1.1",
-        "codeception/verify": "^3.0 || ^2.2",
-        "symfony/browser-kit": "^6.0 || >=2.7 <=4.2.4",
-        "friendsofphp/php-cs-fixer": "dev-master",
+        "friendsofphp/php-cs-fixer": "^3.54",
         "phpstan/phpstan": "^1.10",
         "timeweb/phpstan-enum": "^3.1"
     },
     "config": {
-        "allow-plugins": {
-            "yiisoft/yii2-composer" : true
-        },
-        "process-timeout": 1800,
-        "fxp-asset": {
-            "enabled": false
-        }
+      "allow-plugins": {
+          "yiisoft/yii2-composer": true
+      },
+      "process-timeout": 1800,
+      "fxp-asset": {
+          "enabled": false
+      }
     },
-    "scripts": {
-        "post-install-cmd": [
-            "yii\\composer\\Installer::postInstall"
-        ],
-        "post-create-project-cmd": [
-            "yii\\composer\\Installer::postCreateProject",
-            "yii\\composer\\Installer::postInstall"
-        ],
-        "codetest": "php-cs-fixer --config=php_cs.php fix --verbose && phpstan"
-    },
-    "extra": {
-        "yii\\composer\\Installer::postCreateProject": {
-            "setPermission": [
-                {
-                    "runtime": "0777",
-                    "web/assets": "0777",
-                    "yii": "0755"
-                }
-            ]
-        },
-        "yii\\composer\\Installer::postInstall": {
-            "generateCookieValidationKey": [
-                "config/web.php"
-            ]
-        }
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
-    ]
+    "yii\\composer\\Installer::postInstall": {
+      "generateCookieValidationKey": [
+        "config/web.php"
+      ]
+    }
+  },
+  "repositories": [
+      {
+          "type": "composer",
+          "url": "https://asset-packagist.org"
+      },
+      {
+          "type": "vcs",
+          "url": "https://github.com/AtelliTech/auths-sdk-php.git"
+      }
+  ],
+  "scripts": {
+    "codetest": "php-cs-fixer --config=php_cs.php fix --verbose && phpstan"
+}
 }

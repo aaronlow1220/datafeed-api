@@ -2,10 +2,12 @@
 
 namespace v1\components;
 
+use yii\filters\AccessControl;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\log\Logger;
 use yii\rest\ActiveController;
+use yii\web\HttpException;
 use yii\web\IdentityInterface;
 use yii\web\Response;
 
@@ -66,13 +68,27 @@ class ActiveApiController extends ActiveController
             'class' => \yii\filters\Cors::class,
         ];
 
-        // $behaviors['authenticator'] = [
-        //     'class' => CompositeAuth::class,
-        //     'authMethods' => [
-        //         HttpBearerAuth::class,
-        //     ],
-        //     'except' => $this->authExcept(),
-        // ];
+        $behaviors['access'] = [
+            'class' => AccessControl::class,
+            'rules' => [
+                [
+                    'allow' => true,
+                    'ips' => ['202.39.237.53', '127.0.0.1', '::1'],
+                ],
+            ],
+            'except' => $this->authExcept(),
+            'denyCallback' => function ($rule, $action) {
+                throw new HttpException(403, 'You are not allowed to access this page');
+            },
+        ];
+
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::class,
+            'authMethods' => [
+                HttpBearerAuth::class,
+            ],
+            'except' => $this->authExcept(),
+        ];
 
         return $behaviors;
     }

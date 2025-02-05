@@ -21,6 +21,7 @@ class m241014_084223_create_client_table extends Migration
             'id' => $this->bigPrimaryKey()->unsigned()->notNull()->comment('Auto increment id'),
             'label' => $this->string(255)->notNull()->comment('Client label'),
             'name' => $this->string(255)->notNull()->comment('Client name'),
+            'password' => $this->string(255)->notNull()->comment('Client password'),
             'data' => $this->text()->notNull()->comment('Data mapping rule, JSON format'),
             'currency' => $this->string(3)->notNull()->comment('Currency code'),
             'created_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),
@@ -28,6 +29,8 @@ class m241014_084223_create_client_table extends Migration
             'updated_by' => $this->bigInteger(20)->unsigned()->notNull()->comment('ref: > user.id'),
             'updated_at' => $this->integer(10)->unsigned()->notNull()->comment('unixtime'),
         ]);
+
+        $this->createIndex('INDEX_NAME', $this->table, 'name', true);
     }
 
     /**

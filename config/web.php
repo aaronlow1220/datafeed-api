@@ -7,7 +7,7 @@ $urlManager = require __DIR__.'/urlManager.php';
 $container = require __DIR__.'/container.php';
 
 $config = [
-    'id' => 'datafeed-api-v1',
+    'id' => 'morph-api-v1',
     'basePath' => dirname(__DIR__),
     'timeZone' => 'Asia/Taipei',
     'bootstrap' => ['log', 'v1', 'queue'],

@@ -5,7 +5,7 @@ $urlManager = require __DIR__.'/urlManager.php';
 $container = require __DIR__.'/container.php';
 
 $config = [
-    'id' => 'datafeed-api-v1',
+    'id' => 'morph-api-v1',
     'basePath' => dirname(__DIR__),
     'timeZone' => 'Asia/Taipei',
     'bootstrap' => ['log', 'queue'],
@@ -28,12 +28,12 @@ $config = [
             'password' => $params['db']['password'],
             'charset' => 'utf8mb4',
         ],
-        // 'user' => [
-        //     'class' => 'yii\web\User',
-        //     'identityClass' => 'app\components\auth\UserIdentity',
-        //     'enableAutoLogin' => false,
-        //     'enableSession' => false,
-        // ],
+        'user' => [
+            'class' => 'yii\web\User',
+            'identityClass' => 'app\components\auth\UserIdentity',
+            'enableAutoLogin' => false,
+            'enableSession' => false,
+        ],
         'queue' => [
             'class' => '\yii\queue\db\Queue',
             'as log' => '\yii\queue\LogBehavior',

@@ -65,10 +65,10 @@ return [
             'feed-file' => 'v1/feed-file',
         ],
         'extraPatterns' => [
-            'OPTIONS <a:(feed)>/<id:\d+>' => 'options',
+            // 'OPTIONS <a:(feed)>/<id:\d+>' => 'options',
             'OPTIONS <a:(search)>' => 'options',
             'POST <a:(search)>' => '<a>',
-            'GET <a:(feed)>/<id:\d+>' => '<a>',
+            // 'GET <a:(feed)>/<id:\d+>' => '<a>',
         ],
     ],
 ];

@@ -179,6 +179,10 @@ class DatafeedService
                 $datafeeds = $datafeeds->andWhere($filterCondition);
             }
 
+            if (!is_dir($this->resultPath) && !mkdir($this->resultPath, 0777, true)) {
+                throw new Exception("Create directory({$this->resultPath}), failed");
+            }
+
             $resultPath = sprintf('%s/%s_%s_%s_feed.csv', $this->resultPath, uniqid(), $client['name'], $platform['name']);
 
             $file = fopen($resultPath, 'w');
@@ -219,11 +223,13 @@ class DatafeedService
                         }
                     }
 
-                    if (null !== $feed['price']) {
-                        $feed['price'] = sprintf('%s %s', $feed['price'], $client['currency']);
-                    }
-                    if (null !== $feed['sale_price']) {
-                        $feed['sale_price'] = sprintf('%s %s', $feed['sale_price'], $client['currency']);
+                    if ('1' === $platform['price_currency']) {
+                        if (null !== $feed['price']) {
+                            $feed['price'] = sprintf('%s %s', $feed['price'], $client['currency']);
+                        }
+                        if (null !== $feed['sale_price']) {
+                            $feed['sale_price'] = sprintf('%s %s', $feed['sale_price'], $client['currency']);
+                        }
                     }
                     fputcsv($file, $feed);
                 }
@@ -247,6 +253,9 @@ class DatafeedService
     public function readXml(string $filePath): string
     {
         try {
+            if (!is_dir($this->cachePath) && !mkdir($this->cachePath, 0777, true)) {
+                throw new Exception("Create directory({$this->cachePath}), failed");
+            }
             $xml = new SimpleXMLElement($filePath, 0, true);
             $outputCsvPath = sprintf('%s/%s.csv', $this->cachePath, uniqid());
             $csvFile = fopen($outputCsvPath, 'w');
@@ -284,6 +293,9 @@ class DatafeedService
      */
     public function readCsv(string $filePath): string
     {
+        if (!is_dir($this->cachePath) && !mkdir($this->cachePath, 0777, true)) {
+            throw new Exception("Create directory({$this->cachePath}), failed");
+        }
         $file = fopen($filePath, 'r');
         $tempFilePath = sprintf('%s/%s.csv', $this->cachePath, uniqid());
 
@@ -310,6 +322,9 @@ class DatafeedService
      */
     public function readTxt(string $filePath): string
     {
+        if (!is_dir($this->cachePath) && !mkdir($this->cachePath, 0777, true)) {
+            throw new Exception("Create directory({$this->cachePath}), failed");
+        }
         $tempFilePath = sprintf('%s/%s.csv', $this->cachePath, uniqid());
         $handle = fopen($filePath, 'r');
         $output = fopen($tempFilePath, 'w');

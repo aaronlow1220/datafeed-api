@@ -84,6 +84,20 @@ class User extends ActiveRecord
     }
 
     /**
+     * scenarios.
+     *
+     * @return array<string, mixed>
+     */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+
+        $scenarios['login'] = ['last_login_ip', 'last_login_at'];
+
+        return $scenarios;
+    }
+
+    /**
      * fields.
      *
      * @return array<string, mixed>
